@@ -1,0 +1,15 @@
+<navbar></navbar>
+<div *ngIf="noProjectsFound; else projectsView" class="no-projects">
+  <img src="https://res.cloudinary.com/dcxj8iqvr/image/upload/v1725204006/ighdoyrgvd4dopxu7ita.webp" alt="">
+  <p><strong>Sorry</strong>, No projects found with this Title.</p>
+</div>
+<ng-template #projectsView>
+  <div class="main-container">
+    <div class="projects-container">
+      <projects></projects>
+    </div>
+    <div class="sidebar">
+      <project-details></project-details>
+    </div>
+  </div>
+</ng-template>

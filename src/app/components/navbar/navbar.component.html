@@ -1,0 +1,50 @@
+<nav class="navbar">
+  <div class="logo">
+    <img src="https://res.cloudinary.com/dcxj8iqvr/image/upload/v1720087803/luzjqxau3hfzaexjrkvz.png" alt="Logo">
+  </div>
+
+  <div class="username">
+    <div class="section2">
+      <mat-form-field class="search-field">
+        <input matInput placeholder="Search by Title" (input)="onSearchTermChange($event)">
+      </mat-form-field>
+
+      <div class="status-dropdown">
+        <mat-form-field class="multi-select">
+          <mat-label>Status</mat-label>
+          <mat-select multiple [(value)]="selectedStatuses" (selectionChange)="onSelectionChange()">
+            <mat-select-trigger>
+              {{ getSelectedStatusesDisplay() }}
+            </mat-select-trigger>
+            <mat-option value="all">All</mat-option>
+            <mat-option *ngFor="let status of statusOptions" [value]="status.name">
+              {{ status.name }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+
+      <div class="dropdown">
+        <mat-form-field>
+          <mat-select placeholder="Sort By" (selectionChange)="onSortChange($event.value)">
+            <mat-option value="1">Status</mat-option>
+            <mat-option value="2">Date</mat-option>
+            <mat-option value="3">Title</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+    </div>
+
+    <button class="btn" mat-icon-button color="primary" (click)="openAddProjectDialog()" matTooltip="Add Project" matTooltipPosition="before">
+      <mat-icon>add</mat-icon>
+    </button>
+    <button class="btn" mat-icon-button color="primary" (click)="onRefresh()" matTooltip="Refresh" matTooltipPosition="before">
+      <mat-icon>refresh</mat-icon>
+    </button>
+
+    <button mat-button [matMenuTriggerFor]="usernameMenu">{{ username }}</button>
+    <mat-menu #usernameMenu="matMenu">
+      <button mat-menu-item (click)="signOut()">Sign Out</button>
+    </mat-menu>
+  </div>
+</nav>

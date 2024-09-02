@@ -1,0 +1,107 @@
+.loader-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 87vh; 
+}
+
+
+.progress-card {
+  margin: 10px 0; 
+  font-family: "Poppins", sans-serif;
+  width: auto;}
+.mat-expansion-panel{
+  width: auto;
+}
+p{
+  font-size: 14px;
+}
+
+mat-form-field{
+  width: 100%;
+}
+
+mat-card-title, mat-panel-title {
+  font-weight: bold;
+  font-size: 1rem !important;
+}
+
+mat-card-subtitle {
+  margin: 0 !important;
+}
+
+p {
+  margin-top: 0;
+  margin-bottom: 10px;
+}
+
+h3 {
+  margin-top: 0;
+  margin-bottom: 10px;
+}
+
+.no-project {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: calc(80vh - 54px);
+  text-align: center;
+  padding: 20px;
+}
+
+.no-project img {
+  max-width: 100px;
+  height: auto;
+  margin-bottom: 10px;
+}
+
+.progress-card-container {
+  margin-bottom: 10px;
+}
+
+.progress-entry {
+  display: flex;
+  justify-content: space-between; 
+  margin-bottom: 10px;
+}
+
+.progress-description {
+  flex: 1; 
+  overflow-wrap: break-word; 
+}
+
+.progress-date {
+  flex: 0 0 auto; 
+  margin-right: 10px; 
+}
+.add-progress-card {
+  margin: 30px 0 10px 0px;
+}
+.actions {
+  margin-top: 20px;
+}
+
+
+
+
+
+
+
+
+
+mat-expansion-panel {
+  display: flex;
+  flex-direction: column;
+}
+
+.mat-expansion-panel-content {
+  flex: 1;
+  overflow: hidden;
+}
+
+.progress-container {
+  height: 25vh; 
+  overflow-y: auto;
+}
+

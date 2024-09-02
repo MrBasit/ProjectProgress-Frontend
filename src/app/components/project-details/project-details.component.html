@@ -1,0 +1,79 @@
+<div *ngIf="loadingComp; else projectContent" class="loader-container">
+  <mat-spinner [loading]="true"></mat-spinner>
+</div>
+
+<ng-template #projectContent>
+  <div *ngIf="project; else noProject">
+    <h3>{{ project.title }}</h3>
+    <div>
+      <p><strong>{{ project.status.name }}</strong> | {{ project.projectIniateDate | date }}</p>
+      <p>{{ project.description }}</p>
+
+      <mat-accordion>
+        <mat-expansion-panel [(expanded)]="isAddProgressPanelExpanded">
+          <mat-expansion-panel-header>
+            <mat-panel-title>
+              Add Progress
+            </mat-panel-title>
+            <mat-panel-description>
+              Click to expand and add new progress
+            </mat-panel-description>
+          </mat-expansion-panel-header>
+
+          <form (ngSubmit)="addProgress()" #progressForm="ngForm">
+            <mat-form-field appearance="fill">
+              <mat-label>Description</mat-label>
+              <textarea matInput [(ngModel)]="newProgress.description" name="description" required></textarea>
+              <mat-error *ngIf="progressForm.controls['description']?.invalid && progressForm.controls['description']?.touched">
+                Description is required
+              </mat-error>
+            </mat-form-field>
+
+            <div class="actions">
+              <button *ngIf="!loading" mat-raised-button color="primary" type="submit" [disabled]="progressForm.invalid">Add Progress</button>
+              <loader [loading]="loading"></loader>
+            </div>
+          </form>
+        </mat-expansion-panel>
+
+        <mat-expansion-panel [(expanded)]="isProgressPanelExpanded">
+          <mat-expansion-panel-header>
+            <mat-panel-title>
+              Progress
+            </mat-panel-title>
+            <mat-panel-description>
+              Click to view progress entries
+            </mat-panel-description>
+          </mat-expansion-panel-header>
+
+          <div class="progress-container">
+            <ng-container *ngIf="loading">
+              <div style="display: flex; align-items: center; justify-content: center;">
+                <mat-spinner></mat-spinner>
+              </div>
+            </ng-container>
+            <ng-container *ngIf="!loading">
+              <div *ngIf="!progressArr || progressArr.length === 0">
+                No progress entries available.
+              </div>
+              <div *ngFor="let progress of progressArr" class="progress-entry">
+                <div class="progress-date">{{ progress.progressDateTime | date }}</div>
+                <div class="progress-description">{{ progress.progressNote }}</div>
+              </div>
+            </ng-container>
+          </div>
+
+          <mat-paginator class="mat-paginator" [length]="totalProgress" [pageSize]="pageSize" [pageSizeOptions]="[5, 10, 20, 100]" (page)="onPaginateChange($event)">
+          </mat-paginator>
+        </mat-expansion-panel>
+      </mat-accordion>
+    </div>
+  </div>
+</ng-template>
+
+<ng-template #noProject>
+  <div class="no-project">
+    <img src="https://res.cloudinary.com/dcxj8iqvr/image/upload/v1723639853/uz6wuff0ys51cobayevx.png" alt="">
+    <p><strong>Note: </strong>No project selected. Please select a project to view the details.</p>
+  </div>
+</ng-template>

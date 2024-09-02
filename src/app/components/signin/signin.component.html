@@ -1,0 +1,21 @@
+<div class="login-container">
+  <h1>Management System</h1>
+  <mat-card class="login-card">
+    <mat-card-title>Sign In</mat-card-title>
+    <mat-card-content>
+      <form #form="ngForm" (ngSubmit)="onSubmit()">
+        <mat-error *ngIf="errorMessage" class="error-message">
+          {{ errorMessage }}
+        </mat-error>
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Account Name</mat-label>
+          <input matInput [(ngModel)]="username" name="username" required>
+          <mat-error *ngIf="form.controls['username']?.invalid && form.controls['username']?.touched">Account Name is required</mat-error>
+          <mat-error *ngIf="errorMessage">{{ errorMessage }}</mat-error>
+        </mat-form-field>
+        <button *ngIf="!(loading==true)" mat-raised-button color="primary" type="submit">Submit</button>
+        <loader [loading]="loading"></loader>
+      </form>
+    </mat-card-content>
+  </mat-card>
+</div>

@@ -1,0 +1,9 @@
+<p><strong>Are you sure you want to delete {{project?.title}}?</strong></p>
+<div>
+   
+  <div style="display: flex;">
+    <button *ngIf="!loading" mat-raised-button color="primary" (click)="deleteProject()" style="margin-right: 10px;">Delete</button>
+    <loader [loading]="loading" [ngClass]="{'loader': loading}"></loader>
+    <button mat-raised-button (click)="close()">Close</button>
+  </div>
+</div>

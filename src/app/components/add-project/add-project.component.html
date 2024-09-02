@@ -1,0 +1,48 @@
+<h2>{{ isEditMode ? 'Edit Project' : 'Add New Project' }}</h2>
+<form [formGroup]="projectForm">
+  <mat-form-field appearance="fill">
+    <mat-label>Account</mat-label>
+    <input matInput formControlName="account" disabled>
+  </mat-form-field>
+
+  <mat-form-field appearance="fill">
+    <mat-label>Title</mat-label>
+    <input matInput formControlName="title" placeholder="Client Name - Project name">
+    <mat-error *ngIf="projectForm.get('title')?.invalid && projectForm.get('title')?.touched">
+      Title is required
+    </mat-error>
+  </mat-form-field>
+
+  <mat-form-field appearance="fill">
+    <mat-label>Status</mat-label>
+    <mat-select formControlName="status" [disabled]="statusFieldDisabled"> 
+      <mat-option *ngFor="let status of statusOptions" [value]="status.id">
+        {{ status.name }}
+      </mat-option>
+    </mat-select>
+    <mat-error *ngIf="projectForm.get('status')?.invalid && projectForm.get('status')?.touched">
+      Status is required
+    </mat-error>
+  </mat-form-field>
+
+  <mat-form-field appearance="fill">
+    <mat-label>Description</mat-label>
+    <textarea matInput formControlName="description" placeholder="Brief description about the project."></textarea>
+    <mat-error *ngIf="projectForm.get('description')?.invalid && projectForm.get('description')?.touched">
+      Description is required
+    </mat-error>
+  </mat-form-field>
+
+  <mat-form-field appearance="fill">
+    <mat-label>Date</mat-label>
+    <input matInput formControlName="date" disabled>
+  </mat-form-field>
+
+  <div class="actions">
+    <button *ngIf="!loading" mat-raised-button color="primary" (click)="addProject()" [disabled]="projectForm.invalid" style="margin-right: 10px;">
+      {{ isEditMode ? 'Update' : 'Submit' }}
+    </button>
+    <loader [loading]="loading" [ngClass]="{'loader': loading}"></loader>
+    <button mat-button (click)="close()">Cancel</button>
+  </div>
+</form>

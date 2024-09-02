@@ -1,0 +1,13 @@
+mat-form-field{
+  width: 100%;
+}
+h2{
+  margin: 0;
+}
+.actions{
+  display: flex;
+}
+.loader{
+  padding-left: 30px;
+  padding-right: 30px;
+}
