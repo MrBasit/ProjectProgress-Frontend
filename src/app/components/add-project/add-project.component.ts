@@ -80,18 +80,24 @@ export class AddProjectComponent implements OnInit, OnDestroy {
   addProject() {
     this.loading = true;
     const userSession = JSON.parse(localStorage.getItem('userSession') || '{}');
+    
     if (userSession && userSession.username) {
-      const projectData = {
-        projectTitle: this.projectForm.value.title,
-        projectIniateDate: this.currentDate,
-        statusId: this.projectForm.value.status, 
-        projectAccountId: userSession.id,
-        description: this.projectForm.value.description
-      };
-
+      let projectData: any;
+  
       if (this.isEditMode) {
-        console.log(projectData)
-        this.projectSubscription = this.projectsService.editProject().subscribe(
+        const selectedStatus = this.statusOptions.find(status => status.id === this.projectForm.value.status);
+        console.log(selectedStatus)
+        projectData = {
+          id: this.data.project.id, 
+          title: this.projectForm.value.title,
+          description: this.projectForm.value.description,
+          status:{
+            id: selectedStatus?.id,
+            name: selectedStatus?.name
+          }, 
+        };
+        
+        this.projectSubscription = this.projectsService.editProject(projectData).subscribe(
           () => {
             this.loading = false;
             this.dialogRef.close("confirm");
@@ -101,7 +107,16 @@ export class AddProjectComponent implements OnInit, OnDestroy {
             console.error('Error updating project:', error);
           }
         );
+  
       } else {
+        projectData = {
+          projectTitle: this.projectForm.value.title,
+          projectIniateDate: new Date().toISOString(), // Use the current date for a new project
+          statusId: 1, // Default status to 'Active'
+          projectAccountId: userSession.id,
+          description: this.projectForm.value.description
+        };
+  
         this.projectSubscription = this.projectsService.addProject(projectData).subscribe(
           () => {
             this.loading = false;
@@ -119,6 +134,7 @@ export class AddProjectComponent implements OnInit, OnDestroy {
       this.dialogRef.close();
     }
   }
+  
 
   close() {
     this.dialogRef.close();

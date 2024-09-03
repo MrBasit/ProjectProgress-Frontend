@@ -11,6 +11,7 @@ export class EventService {
   private OnAddProject = new Subject(); 
   private ProjectSelected = new Subject(); 
   private noProjects = new Subject(); 
+  private statusChange = new Subject();
 
   
   SearchTermChanged$ = this.SearchTermChanged.asObservable();
@@ -19,6 +20,7 @@ export class EventService {
   OnAddProject$ = this.OnAddProject.asObservable();
   ProjectSelected$ = this.ProjectSelected.asObservable();
   noProjects$ = this.noProjects.asObservable();
+  statusChange$ = this.statusChange.asObservable();
 
 
 
@@ -39,6 +41,9 @@ export class EventService {
   }
   PublishNoProjects(value: boolean){
     this.noProjects.next(value);
+  }
+  publishStatusChange(value: any[]){
+    this.statusChange.next(value)
   }
 
 }

@@ -1,61 +1,69 @@
-<div class="projects-wrapper">
-  <div *ngIf="loadingProjects; else content" class="loader-container">
-    <mat-spinner [loading]="true"></mat-spinner> 
-  </div>
-
-  <ng-template #content>
-    <div class="section">
-      <div class="projects-container">
-        <mat-card
-          *ngFor="let project of projects"
-          class="project-card"
-          [ngClass]="{
-            'selected': project === selectedProject,
-            'status-active': project.status.name === 'Active',
-            'status-hold': project.status.name === 'Hold' || project.status.name === 'Pause',
-            'status-completed': project.status.name === 'Completed',
-            'status-cancelled': project.status.name === 'Cancelled' || project.status.name === 'Deleted'
-          }"
-          (click)="selectProject(project)"
-        >
-          <div class="icon">
-            <mat-card-header class="card-header-content">
-              <mat-card-title class="card-title">
-                <span class="title-container">
-                  {{ project.title }}
-                  <span *ngIf="project.status.name === 'Active'" class="status-dot"></span>
-                </span>
-              </mat-card-title>
-              <mat-card-subtitle class="card-subtitle">
-                <span
-                  [ngClass]="{
-                    'text-active': project.status.name === 'Active',
-                    'text-hold': project.status.name === 'Hold' || project.status.name === 'Pause',
-                    'text-completed': project.status.name === 'Completed',
-                    'text-cancelled': project.status.name === 'Cancelled' || project.status.name === 'Deleted'
-                  }"
-                >
-                  <strong>{{ project.status.name}}</strong>
-                </span>
-                | {{ project.projectIniateDate | date }}
-              </mat-card-subtitle>
-            </mat-card-header>
-            <mat-icon (click)="openEditProject($event, project)">edit</mat-icon>
-            <mat-icon class="delete" (click)="deleteProject($event, project)">delete</mat-icon>
-          </div>
-
-          <mat-card-content>
-            <p>{{ project.description }}</p>
-          </mat-card-content>
-        </mat-card>
-      </div>
-    </div>
-  </ng-template>
-  <mat-paginator
-      [length]="totalProjects"
-      [pageSize]="pageSize"
-      [pageSizeOptions]="[5, 10, 20, 100]"
-      (page)="onPaginateChange($event)"
-    >
-    </mat-paginator>
+<div *ngIf="noProjects; else projectsView" class="no-projects">
+  <!-- <p><strong>Sorry</strong>, No project found with {{searchTerm}}.</p> -->
+  <p><strong>Sorry</strong>, No projects found.</p>
 </div>
+<ng-template #projectsView>
+  <div class="projects-wrapper">
+    <div *ngIf="loadingProjects; else content" class="loader-container">
+      <mat-spinner [loading]="true"></mat-spinner> 
+    </div>
+  
+    <ng-template #content>
+        <div class="section">
+          <div class="projects-container">
+            <mat-card
+              *ngFor="let project of projects"
+              class="project-card"
+              [ngClass]="{
+                'selected': project === selectedProject,
+                'status-active': project.status.name === 'Active',
+                'status-hold': project.status.name === 'Hold' || project.status.name === 'Pause',
+                'status-completed': project.status.name === 'Completed',
+                'status-cancelled': project.status.name === 'Cancelled' || project.status.name === 'Deleted'
+              }"
+              (click)="selectProject(project)"
+            >
+              <div class="icon">
+                <mat-card-header class="card-header-content">
+                  <mat-card-title class="card-title">
+                    <span class="title-container">
+                      {{ project.title }}
+                      <span *ngIf="project.status.name === 'Active'" class="status-dot"></span>
+                    </span>
+                  </mat-card-title>
+                  <mat-card-subtitle class="card-subtitle">
+                    <span
+                      [ngClass]="{
+                        'text-active': project.status.name === 'Active',
+                        'text-hold': project.status.name === 'Hold' || project.status.name === 'Pause',
+                        'text-completed': project.status.name === 'Completed',
+                        'text-cancelled': project.status.name === 'Cancelled' || project.status.name === 'Deleted'
+                      }"
+                    >
+                      <strong>{{ project.status.name}}</strong>
+                    </span>
+                    | {{ project.projectIniateDate | date }}
+                  </mat-card-subtitle>
+                </mat-card-header>
+                <mat-icon (click)="openEditProject($event, project)">edit</mat-icon>
+                <mat-icon class="delete" (click)="deleteProject($event, project)">delete</mat-icon>
+              </div>
+    
+              <mat-card-content>
+                <p>{{ project.description }}</p>
+              </mat-card-content>
+            </mat-card>
+          </div>
+        </div>    
+    </ng-template>
+    <mat-paginator
+        [length]="totalProjects"
+        [pageSize]="pageSize"
+        [pageSizeOptions]="[5, 10, 20, 100]"
+        (page)="onPaginateChange($event)"
+      >
+      </mat-paginator>
+  </div>
+</ng-template>
+
+

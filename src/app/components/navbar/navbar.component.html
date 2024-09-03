@@ -12,11 +12,11 @@
       <div class="status-dropdown">
         <mat-form-field class="multi-select">
           <mat-label>Status</mat-label>
-          <mat-select multiple [(value)]="selectedStatuses" (selectionChange)="onSelectionChange()">
+          <mat-select (closed)="onDropdownClosed()" multiple [(value)]="selectedStatuses" (selectionChange)="onSelectionChange()">
             <mat-select-trigger>
               {{ getSelectedStatusesDisplay() }}
             </mat-select-trigger>
-            <mat-option value="all">All</mat-option>
+            <mat-option value="All">All</mat-option>
             <mat-option *ngFor="let status of statusOptions" [value]="status.name">
               {{ status.name }}
             </mat-option>

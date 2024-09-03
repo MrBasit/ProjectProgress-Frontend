@@ -18,6 +18,33 @@ export class ProjectsComponent implements OnInit, OnDestroy {
   projects: any[] = [];
   selectedProject: any = null;
   loadingProjects: boolean = false;
+  noProjects: boolean = false;
+  statuses = [{ 
+    id: 1, 
+    name: "Active" 
+  },
+  {
+    id: 2,
+    name: "Hold"
+  },
+  {
+    id: 3,
+    name: "Pause"
+  },
+  {
+    id: 4,
+    name: "Completed"
+  },
+  {
+    id: 5,
+    name: "Cancelled"
+  },
+  {
+    id: 6,
+    name: "Deleted"
+  }
+  ]
+  statusesArray: Array<{ id: number, name: string }> = this.statuses
 
   totalProjects: number = 0;
   pageSize: number = 5;
@@ -35,6 +62,17 @@ export class ProjectsComponent implements OnInit, OnDestroy {
     this.eventService.SearchTermChanged$.subscribe(
       (r:string)=>{
         this.searchTerm = r == null?"":r;
+        this.loadProjects();
+      }
+    )
+
+    this.eventService.statusChange$.subscribe(
+      (arr: any) => {
+        if (arr.length == 0) {
+          this.statusesArray = this.statuses;
+        } else {
+          this.statusesArray = arr;
+        }
         this.loadProjects();
       }
     )
@@ -70,7 +108,7 @@ export class ProjectsComponent implements OnInit, OnDestroy {
       var getProjectsRequestModel = {
         username: ""
       }
-      var projests$ = this.projectsService.getProjectsByAccountName(userSession.username, this.pageIndex + 1, this.pageSize, this.searchTerm, this.sortValue);
+      var projests$ = this.projectsService.getProjectsByAccountName(userSession.id, this.pageIndex + 1, this.pageSize, this.searchTerm, this.sortValue, this.statusesArray);
   
       if (this.projectsSubscription) {
         this.projectsSubscription.unsubscribe();
@@ -81,9 +119,11 @@ export class ProjectsComponent implements OnInit, OnDestroy {
           this.projects = response.data;
           this.totalProjects = response.totalRecords;
           if(this.projects.length === 0){
-            this.eventService.PublishNoProjects(true)
+            // this.eventService.PublishNoProjects(true)
+              this.noProjects = true
           }else{
-            this.eventService.PublishNoProjects(false)
+            this.noProjects = false
+            // this.eventService.PublishNoProjects(false)
           }
           this.loadingProjects = false;
         },
@@ -121,8 +161,11 @@ export class ProjectsComponent implements OnInit, OnDestroy {
     });
 
     dialogRef.afterClosed().subscribe(result => {
-      if (result) {
-        console.log(`Dialog result: ${result}`);
+      if (result === 'confirm'){
+        this.loadProjects();
+        if (this.selectedProject === project) {
+          this.eventService.PublishProjectSelected(project.id)
+        }
       }
     });
   }

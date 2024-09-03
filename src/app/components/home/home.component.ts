@@ -7,23 +7,12 @@ import { Subscription } from 'rxjs';
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.css']
 })
-export class HomeComponent implements OnInit, OnDestroy {
-  noProjectsFound: boolean = false;
-  private noProjectsSubscription: Subscription | undefined;
+export class HomeComponent implements OnInit{
 
-  constructor(private eventService: EventService) {}
+  constructor() {}
 
   ngOnInit() {
-    this.noProjectsSubscription = this.eventService.noProjects$.subscribe(
-      (response) => {
-        this.noProjectsFound = response === true;
-      }
-    );
+    
   }
 
-  ngOnDestroy(): void {
-    if (this.noProjectsSubscription) {
-      this.noProjectsSubscription.unsubscribe();
-    }
-  }
 }

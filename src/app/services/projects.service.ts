@@ -14,7 +14,7 @@ export class ProjectsService {
 
   constructor(private http: HttpClient){}
 
-  getProjectsByAccountName(accountName: string, pageNumber: number, pageSize: number,searchValue: string, sortValue : number) {
+  getProjectsByAccountName(accountId: number, pageNumber: number, pageSize: number,searchValue: string, sortValue : number, statusArr: any) {
     const body = {
       sortDetails: {
         sortColumn: sortValue,
@@ -27,7 +27,11 @@ export class ProjectsService {
       searchDetails: {
         searchTerm: searchValue
       },
-      accountName: accountName
+      accountId: accountId,
+      statuses: statusArr.map((status) => ({
+        id: status.id,
+        name: status.name
+      }))
     }
     return this.http.post<any>(`${this.url}/api/Projects/GetProjects`, body);
   }
@@ -48,7 +52,7 @@ export class ProjectsService {
   getStatuses(): Observable<any[]> {
     return this.http.get<any[]>(`${this.url}/api/Status/GetStatuses`);
   }
-  editProject(){
-    return this.http.get(`${this.url}/api/Projects/EditProject`)
+  editProject(projectData: any){
+    return this.http.post(`${this.url}/api/Projects/EditProject`, projectData)
   }
 }

@@ -3,6 +3,15 @@
   flex-direction: column;
   height: calc(100vh - 70px);
 }
+.no-projects {
+  display: flex; 
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 80vh;
+  font-size: 1em;
+}
+
 .loader-container{
   height: 80vh;
   display: flex;

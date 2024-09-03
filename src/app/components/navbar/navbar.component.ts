@@ -15,6 +15,7 @@ export class NavbarComponent implements OnInit {
   statusOptions: { id: number, name: string }[] = [];
   selectedStatuses: string[] = [];
   allSelected = false;
+  statusesArray: Array<{ id: number, name: string }> = [];
 
   private dialogSubscription: Subscription | undefined;
 
@@ -42,13 +43,31 @@ export class NavbarComponent implements OnInit {
   }
 
   onSelectionChange() {
-    if (this.selectedStatuses.includes('all')) {
-      this.selectedStatuses = this.statusOptions.map(status => status.name).concat('all');
-      this.allSelected = true;
+    if (this.selectedStatuses.includes('All')) {
+      if (this.allSelected) {
+        this.selectedStatuses = [];
+        this.allSelected = false;
+      } else {
+        this.selectedStatuses = ['All', ...this.statusOptions.map(status => status.name)];
+        this.allSelected = true;
+      }
     } else {
-      this.allSelected = this.selectedStatuses.length === this.statusOptions.length;
-      this.selectedStatuses = this.selectedStatuses.filter(status => status !== 'all');
+      this.allSelected = false
+      if (this.selectedStatuses.length === this.statusOptions.length) {
+        this.selectedStatuses.push('All')
+        this.allSelected = true;
+      }
     }
+  }
+  
+  
+
+  onDropdownClosed(){
+    this.statusesArray = this.statusOptions.filter(option =>
+      this.selectedStatuses.includes(option.name)
+    );
+    console.log('Dropdown closed. Sending array:', this.statusesArray);
+    this.eventService.publishStatusChange(this.statusesArray);
   }
 
   getSelectedStatusesDisplay(): string {
