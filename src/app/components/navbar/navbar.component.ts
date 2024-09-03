@@ -42,23 +42,27 @@ export class NavbarComponent implements OnInit {
     });
   }
 
-  onSelectionChange() {
-    if (this.selectedStatuses.includes('All')) {
+  onSelectionChange(e: Event) {
+    console.log(e)
+    if ((this.selectedStatuses.includes('All') || this.selectedStatuses.length === this.statusOptions.length)) {
       if (this.allSelected) {
-        this.selectedStatuses = [];
-        this.allSelected = false;
+        this.selectedStatuses = []; 
+        this.allSelected = false; 
       } else {
-        this.selectedStatuses = ['All', ...this.statusOptions.map(status => status.name)];
-        this.allSelected = true;
+        this.selectedStatuses = [ ...this.statusOptions.map(status => status.name)]; 
+        this.allSelected = true; 
       }
     } else {
-      this.allSelected = false
+      this.allSelected = false;
+      
       if (this.selectedStatuses.length === this.statusOptions.length) {
-        this.selectedStatuses.push('All')
-        this.allSelected = true;
+        // this.selectedStatuses.push('All');
+        this.allSelected = true; 
       }
     }
   }
+
+  
   
   
 
@@ -66,7 +70,6 @@ export class NavbarComponent implements OnInit {
     this.statusesArray = this.statusOptions.filter(option =>
       this.selectedStatuses.includes(option.name)
     );
-    console.log('Dropdown closed. Sending array:', this.statusesArray);
     this.eventService.publishStatusChange(this.statusesArray);
   }
 
