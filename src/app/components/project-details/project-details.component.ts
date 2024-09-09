@@ -1,6 +1,7 @@
 import { Component, OnInit, ViewChild, OnDestroy } from '@angular/core';
 import { ProjectsService } from '../../services/projects.service';
 import { MatExpansionPanel } from '@angular/material/expansion';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { ProgressService } from '../../services/progress.service';
 import { MatPaginator } from '@angular/material/paginator';
 import { EventService } from 'src/app/services/event.service';
@@ -36,7 +37,8 @@ export class ProjectDetailsComponent implements OnInit, OnDestroy {
   constructor(
     private progressService: ProgressService,
     private projectsService: ProjectsService,
-    private eventService: EventService
+    private eventService: EventService, 
+    private snackBar: MatSnackBar
   ) {}
 
   ngOnInit(): void {
@@ -78,6 +80,13 @@ export class ProjectDetailsComponent implements OnInit, OnDestroy {
         (error) => {
           console.error('Error fetching progress:', error);
           this.loading = false;
+          if (error) {
+            this.snackBar.open('Server is not responding 😢.', 'Close', {
+              duration: 3000,
+              horizontalPosition: 'center',
+              verticalPosition: 'top',
+            });
+          }
         }
       );
     }
@@ -94,6 +103,13 @@ export class ProjectDetailsComponent implements OnInit, OnDestroy {
         (error) => {
           console.error('Error fetching project:', error);
           this.loadingComp = false;
+          if (error) {
+            this.snackBar.open('Server is not responding 😢.', 'Close', {
+              duration: 3000,
+              horizontalPosition: 'center',
+              verticalPosition: 'top',
+            });
+          }
         }
       );
     }
@@ -119,6 +135,13 @@ export class ProjectDetailsComponent implements OnInit, OnDestroy {
         (error) => {
           this.loading = false;
           console.error('Error adding progress:', error);
+          if (error) {
+            this.snackBar.open('Server is not responding 😢.', 'Close', {
+              duration: 3000,
+              horizontalPosition: 'center',
+              verticalPosition: 'top',
+            });
+          }
         }
       );
     } else {

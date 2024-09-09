@@ -1,5 +1,6 @@
-import { Component, OnInit, OnDestroy, Input, ViewChild } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
 import { ProjectsService } from '../../services/projects.service';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatDialog } from '@angular/material/dialog';
 import { MatPaginator } from '@angular/material/paginator';
 import { EventService } from 'src/app/services/event.service';
@@ -14,37 +15,21 @@ import { AddProjectComponent } from '../add-project/add-project.component';
 })
 export class ProjectsComponent implements OnInit, OnDestroy {
   sortValue = 0;
-  searchTerm:string = "";
+  searchTerm: string = "";
   projects: any[] = [];
   selectedProject: any = null;
   loadingProjects: boolean = false;
   noProjects: boolean = false;
-  statuses = [{ 
-    id: 1, 
-    name: "Active" 
-  },
-  {
-    id: 2,
-    name: "Hold"
-  },
-  {
-    id: 3,
-    name: "Pause"
-  },
-  {
-    id: 4,
-    name: "Completed"
-  },
-  {
-    id: 5,
-    name: "Cancelled"
-  },
-  {
-    id: 6,
-    name: "Deleted"
-  }
-  ]
-  statusesArray: Array<{ id: number, name: string }> = this.statuses
+  account: any;
+  statuses = [
+    { id: 1, name: "Active" },
+    { id: 2, name: "Hold" },
+    { id: 3, name: "Pause" },
+    { id: 4, name: "Completed" },
+    { id: 5, name: "Cancelled" },
+    { id: 6, name: "Deleted" }
+  ];
+  statusesArray: Array<{ id: number, name: string }> = this.statuses;
 
   totalProjects: number = 0;
   pageSize: number = 5;
@@ -53,83 +38,105 @@ export class ProjectsComponent implements OnInit, OnDestroy {
   @ViewChild(MatPaginator) paginator!: MatPaginator;
 
   private projectsSubscription: Subscription | undefined;
+  private subscriptions: Subscription[] = [];
 
-  constructor(private projectsService: ProjectsService, private dialog: MatDialog, private eventService: EventService) {}
+  constructor(private projectsService: ProjectsService, private dialog: MatDialog, private eventService: EventService, private snackBar: MatSnackBar) {}
 
   ngOnInit(): void {
-    this.loadProjects();
-    
-    this.eventService.SearchTermChanged$.subscribe(
-      (r:string)=>{
-        this.searchTerm = r == null?"":r;
-        this.loadProjects();
+    const firstProjectAccount$ = this.eventService.firstProjectAccount$;
+    const firstProjectAccountIdSubscription = firstProjectAccount$.subscribe(value => {
+      if(value != null){
+        this.account = value.id;
+        this.loadProjects(); 
       }
-    )
+    });
+    this.subscriptions.push(firstProjectAccountIdSubscription);
 
-    this.eventService.statusChange$.subscribe(
-      (arr: any) => {
-        if (arr.length == 0) {
-          this.statusesArray = this.statuses;
-        } else {
-          this.statusesArray = arr;
-        }
-        this.loadProjects();
-      }
-    )
+    // this.subscriptions.push(
+    //   this.eventService.ProjectAccount$.subscribe(account => {
+    //     this.account = account.id || ""; 
+    //     this.loadProjects();
+    //   })
+    // );
 
-    this.eventService.SortChanged$.subscribe(
-      (r:number)=>{
-        this.sortValue = r;
-        this.loadProjects();
-      }
-    )
-    this.eventService.OnRefresh$.subscribe(
-      (refresh)=>{
-        if(refresh){
-          this.eventService.PublishProjectSelected(null)
+    this.subscriptions.push(
+      this.eventService.SearchTermChanged$.subscribe(
+        (r: string) => {
+          this.searchTerm = r || ""; 
           this.loadProjects();
         }
-      }
-    )
-    this.eventService.OnAddProject$.subscribe(
-      (addProject)=>{
-        if(addProject){
+      )
+    );
+
+    this.subscriptions.push(
+      this.eventService.statusChange$.subscribe(
+        (arr: any) => {
+          this.statusesArray = arr.length === 0 ? this.statuses : arr;
           this.loadProjects();
         }
-      }
-    )
+      )
+    );
+
+    this.subscriptions.push(
+      this.eventService.SortChanged$.subscribe(
+        (r: number) => {
+          this.sortValue = r;
+          this.loadProjects();
+        }
+      )
+    );
+
+    this.subscriptions.push(
+      this.eventService.OnRefresh$.subscribe(
+        (refresh) => {
+          if (refresh) {
+            this.eventService.PublishProjectSelected(null);
+            this.loadProjects();
+          }
+        }
+      )
+    );
+
+    this.subscriptions.push(
+      this.eventService.OnAddProject$.subscribe(
+        (addProject) => {
+          if (addProject) {
+            this.loadProjects();
+          }
+        }
+      )
+    );
+    // this.loadProjects();
   }
 
   loadProjects(): void {
     this.loadingProjects = true;
-    const userSession = JSON.parse(localStorage.getItem('userSession') || '{}');
+    const userSession = JSON.parse(localStorage.getItem('user') || '{}');
     
-    if (userSession && userSession.expiration > new Date().getTime()) {
-      var getProjectsRequestModel = {
-        username: ""
-      }
-      var projests$ = this.projectsService.getProjectsByAccountName(userSession.id, this.pageIndex + 1, this.pageSize, this.searchTerm, this.sortValue, this.statusesArray);
-  
+    if (userSession && this.account) {
+      const projects$ = this.projectsService.getProjectsByAccountName(this.account, this.pageIndex + 1, this.pageSize, this.searchTerm, this.sortValue, this.statusesArray);
+
       if (this.projectsSubscription) {
         this.projectsSubscription.unsubscribe();
       }
-  
-      this.projectsSubscription = projests$.subscribe(
+
+      this.projectsSubscription = projects$.subscribe(
         (response: any) => {
           this.projects = response.data;
           this.totalProjects = response.totalRecords;
-          if(this.projects.length === 0){
-            // this.eventService.PublishNoProjects(true)
-              this.noProjects = true
-          }else{
-            this.noProjects = false
-            // this.eventService.PublishNoProjects(false)
-          }
+          this.noProjects = this.projects.length === 0;
           this.loadingProjects = false;
         },
         (error) => {
           console.error('Error loading projects:', error);
           this.loadingProjects = false;
+          if (error) {
+            this.snackBar.open('Server is not responding 😢.', 'Close', {
+              duration: 3000,
+              horizontalPosition: 'center',
+              verticalPosition: 'top',
+            });
+          }
         }
       );
     } else {
@@ -139,7 +146,7 @@ export class ProjectsComponent implements OnInit, OnDestroy {
   
   deleteProject(event: Event, project: any): void {
     event.stopPropagation();
-    console.log(project)
+    console.log(project);
     const dialogRef = this.dialog.open(DeleteProjectComponent, {
       data: project
     });
@@ -148,23 +155,23 @@ export class ProjectsComponent implements OnInit, OnDestroy {
         this.projects = this.projects.filter(p => p.id !== project.id);
         this.loadProjects(); 
         if (this.selectedProject === project) {
-          this.eventService.PublishProjectSelected(project.id)
+          this.eventService.PublishProjectSelected(project.id);
         }
       }
     });
   }
 
   openEditProject(event: Event, project: any) {
-    event.stopPropagation()
+    event.stopPropagation();
     const dialogRef = this.dialog.open(AddProjectComponent, {
-      data: { project } 
+      data: { project }
     });
 
     dialogRef.afterClosed().subscribe(result => {
-      if (result === 'confirm'){
+      if (result === 'confirm') {
         this.loadProjects();
         if (this.selectedProject === project) {
-          this.eventService.PublishProjectSelected(project.id)
+          this.eventService.PublishProjectSelected(project.id);
         }
       }
     });
@@ -178,11 +185,13 @@ export class ProjectsComponent implements OnInit, OnDestroy {
 
   selectProject(project: any): void {
     this.selectedProject = project;
-    this.eventService.PublishProjectSelected(project.id)
+    this.eventService.PublishProjectSelected(project.id);
   }
 
   ngOnDestroy(): void {
-    if(this.projectsSubscription)
+    if (this.projectsSubscription) {
       this.projectsSubscription.unsubscribe();
+    }
+    this.subscriptions.forEach(sub => sub.unsubscribe());
   }
 }

@@ -1,18 +1,25 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
-import { EventService } from 'src/app/services/event.service';
-import { Subscription } from 'rxjs';
+import { Component, OnInit } from '@angular/core';
 
 @Component({
   selector: 'home',
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.css']
 })
-export class HomeComponent implements OnInit{
+export class HomeComponent implements OnInit {
+  noProjects: boolean = false;
 
-  constructor() {}
-
-  ngOnInit() {
-    
+  ngOnInit(): void {
+    this.checkForProjects();
   }
 
+  checkForProjects(): void {
+    const keys = Object.keys(localStorage);
+    const projectAccountKeys = keys.filter(key => key.startsWith('projectAccount_'));
+
+    if (projectAccountKeys.length > 0) {
+      this.noProjects = false; 
+    } else {
+      this.noProjects = true;
+    }
+  }
 }

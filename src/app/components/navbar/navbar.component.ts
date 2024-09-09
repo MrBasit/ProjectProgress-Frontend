@@ -1,9 +1,10 @@
-import { Component, EventEmitter, OnInit, Output } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { AddProjectComponent } from '../add-project/add-project.component';
 import { MatDialog } from '@angular/material/dialog';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { EventService } from 'src/app/services/event.service';
-import { Subscription } from 'rxjs';
 import { ProjectsService } from 'src/app/services/projects.service';
+import { AuthGuardService } from './../../services/auth-guard.service';
 
 @Component({
   selector: 'navbar',
@@ -16,57 +17,94 @@ export class NavbarComponent implements OnInit {
   selectedStatuses: string[] = [];
   allSelected = false;
   statusesArray: Array<{ id: number, name: string }> = [];
+  projectAccounts: { id: number, name: string }[] = [];
+  firstProjectAccount: { id: number, name: string } | null = null;
+  remainingProjectAccounts: { id: number, name: string }[] = [];
 
-  private dialogSubscription: Subscription | undefined;
-
-  constructor(private dialog: MatDialog, private eventService: EventService, private projectService: ProjectsService) {}
+  constructor(
+    private dialog: MatDialog,
+    private eventService: EventService,
+    private projectService: ProjectsService,
+    private authService: AuthGuardService,
+    private snackBar: MatSnackBar
+  ) {}
 
   ngOnInit(): void {
+    this.loadProjectAccounts();
     this.loadStatuses();
     const userSession = JSON.parse(localStorage.getItem('userSession') || '{}');
     if (userSession && userSession.expiration > new Date().getTime()) {
       this.username = userSession.username;
     } else {
-      this.username = null; 
+      this.username = null;
+    }
+  }
+
+  loadProjectAccounts() {
+    const projectAccounts: { id: number, name: string }[] = [];
+    for (let i = 0; i < localStorage.length; i++) {
+      const key = localStorage.key(i);
+      if (key && key.startsWith('projectAccount_')) {
+        const accountData = localStorage.getItem(key);
+        if (accountData) {
+          const account = JSON.parse(accountData);
+          projectAccounts.push(account);
+        }
+      }
+    }
+
+    this.projectAccounts = projectAccounts;
+    if (this.projectAccounts.length > 0) {
+      this.firstProjectAccount = this.projectAccounts[0];
+      this.remainingProjectAccounts = this.projectAccounts.slice(1);
+      this.eventService.updateFirstProjectAccount(this.firstProjectAccount);
     }
   }
 
   loadStatuses() {
     this.projectService.getStatuses().subscribe({
       next: (response) => {
-        this.statusOptions = response; 
+        this.statusOptions = response;
+        this.selectedStatuses = this.statusOptions.map(status => status.name);
+        this.allSelected = true; 
       },
       error: (error) => {
         console.error('Failed to load statuses', error);
+        if (error) {
+          this.snackBar.open('Server is not responding 😢.', 'Close', {
+            duration: 3000,
+            horizontalPosition: 'center',
+            verticalPosition: 'top',
+          });
+        }
       }
     });
   }
 
   onSelectionChange(e: Event) {
-    console.log(e)
-    if ((this.selectedStatuses.includes('All') || this.selectedStatuses.length === this.statusOptions.length)) {
+    if (
+      this.selectedStatuses.includes('All') ||
+      this.selectedStatuses.length === this.statusOptions.length
+    ) {
       if (this.allSelected) {
-        this.selectedStatuses = []; 
-        this.allSelected = false; 
+        this.selectedStatuses = [];
+        this.allSelected = false;
       } else {
-        this.selectedStatuses = [ ...this.statusOptions.map(status => status.name)]; 
-        this.allSelected = true; 
+        this.selectedStatuses = [
+          ...this.statusOptions.map(status => status.name),
+        ];
+        this.allSelected = true;
       }
     } else {
       this.allSelected = false;
-      
+
       if (this.selectedStatuses.length === this.statusOptions.length) {
-        // this.selectedStatuses.push('All');
-        this.allSelected = true; 
+        this.allSelected = true;
       }
     }
   }
 
-  
-  
-  
-
-  onDropdownClosed(){
+  onDropdownClosed() {
     this.statusesArray = this.statusOptions.filter(option =>
       this.selectedStatuses.includes(option.name)
     );
@@ -78,7 +116,7 @@ export class NavbarComponent implements OnInit {
       return 'All';
     }
     return this.selectedStatuses.length > 0
-      ? this.selectedStatuses.join(', ')  
+      ? this.selectedStatuses.join(', ')
       : 'None';
   }
 
@@ -89,16 +127,16 @@ export class NavbarComponent implements OnInit {
 
   openAddProjectDialog() {
     const dialogRef = this.dialog.open(AddProjectComponent);
-    this.dialogSubscription = dialogRef.afterClosed().subscribe(result => {
+    dialogRef.afterClosed().subscribe(result => {
       console.log(`Dialog result: ${result}`);
       if (result === 'confirm') {
-        this.eventService.PublishOnAddProject(true)
+        this.eventService.PublishOnAddProject(true);
       }
     });
   }
 
   onRefresh() {
-    this.eventService.PublishOnRefresh(true)
+    this.eventService.PublishOnRefresh(true);
   }
 
   onSearchTermChange(e: any) {
@@ -107,13 +145,18 @@ export class NavbarComponent implements OnInit {
   }
 
   signOut() {
-    localStorage.removeItem('userSession');
-    window.location.reload();
+    this.authService.logout();
   }
 
-  ngOnDestroy(): void {
-    if (this.dialogSubscription) {
-      this.dialogSubscription.unsubscribe();
-    }
+  updateSelectedProjectAccount(account: { id: number, name: string }) {
+    this.remainingProjectAccounts.push(
+      this.firstProjectAccount as { id: number, name: string }
+    );
+    this.firstProjectAccount = account;
+    this.remainingProjectAccounts = this.remainingProjectAccounts.filter(
+      acc => acc.id !== account.id
+    );
+    this.eventService.updateFirstProjectAccount(account);
+    // this.eventService.PublishProjectAccount(account);
   }
 }

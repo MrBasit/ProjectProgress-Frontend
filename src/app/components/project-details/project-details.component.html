@@ -40,6 +40,7 @@
           <mat-expansion-panel-header>
             <mat-panel-title>
               Progress
+              <span class="badge">{{totalProgress}}</span>
             </mat-panel-title>
             <mat-panel-description>
               Click to view progress entries
@@ -57,7 +58,7 @@
                 No progress entries available.
               </div>
               <div *ngFor="let progress of progressArr" class="progress-entry">
-                <div class="progress-date">{{ progress.progressDateTime | date }}</div>
+                <div class="progress-date"><strong>{{ progress.progressDateTime | date }}</strong></div>
                 <div class="progress-description">{{ progress.progressNote }}</div>
               </div>
             </ng-container>

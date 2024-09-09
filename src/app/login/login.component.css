@@ -1,0 +1,51 @@
+mat-card {
+  max-width: 400px;
+  margin: 2rem auto;
+  padding: 1rem;
+  border: 1px solid #BDBDBD; 
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); 
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+mat-card-title,
+mat-card-subtitle {
+  text-align: center;
+}
+
+mat-form-field {
+  width: 100%;
+  margin-bottom: 16px;
+}
+
+.login {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+mat-card-title {
+  font-weight: bold;
+  font-family: "Poppins", sans-serif;
+}
+
+mat-card-actions{
+  align-self: flex-start;
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+button{
+  margin: 10px !important;
+  font-weight: bold;
+}
+.loader{
+  padding-left: 30px;
+  padding-right: 30px;
+}

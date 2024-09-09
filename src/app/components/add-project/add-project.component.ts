@@ -1,9 +1,11 @@
 import { Component, OnInit, OnDestroy, Inject } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { ProjectsService } from '../../services/projects.service';
 import { Subscription } from 'rxjs';
 import { DatePipe } from '@angular/common';
+import { EventService } from 'src/app/services/event.service';
 
 @Component({
   selector: 'add-project',
@@ -12,7 +14,7 @@ import { DatePipe } from '@angular/common';
 })
 export class AddProjectComponent implements OnInit, OnDestroy {
   projectForm: FormGroup;
-  account: string = '';
+  account: any;
   currentDate: string = '';
   loading: boolean = false;
   isEditMode: boolean = false;
@@ -27,6 +29,8 @@ export class AddProjectComponent implements OnInit, OnDestroy {
     private dialogRef: MatDialogRef<AddProjectComponent>,
     private projectsService: ProjectsService,
     private datePipe: DatePipe,
+    private eventService: EventService,
+    private snackBar: MatSnackBar,
     @Inject(MAT_DIALOG_DATA) public data: any 
   ) {
     this.projectForm = this.fb.group({
@@ -39,9 +43,11 @@ export class AddProjectComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    const userSession = JSON.parse(localStorage.getItem('userSession') || '{}');
-    if (userSession && userSession.username) {
-      this.account = userSession.username;
+    const userSession = JSON.parse(localStorage.getItem('user') || '{}');
+    if (userSession) {
+      this.eventService.firstProjectAccount$.subscribe(value => {
+        this.account = value.name;
+      });
       this.currentDate = new Date().toISOString();
       this.projectForm.patchValue({ date: this.currentDate, account: this.account });
     }
@@ -73,15 +79,24 @@ export class AddProjectComponent implements OnInit, OnDestroy {
       },
       (error) => {
         console.error('Error loading status options:', error);
+        if (error) {
+          this.snackBar.open('Server is not responding 😢.', 'Close', {
+            duration: 3000,
+            horizontalPosition: 'center',
+            verticalPosition: 'top',
+          });
+        }
       }
     );
   }
 
   addProject() {
     this.loading = true;
-    const userSession = JSON.parse(localStorage.getItem('userSession') || '{}');
-    
-    if (userSession && userSession.username) {
+    const userSession = JSON.parse(localStorage.getItem('user') || '{}');
+    this.eventService.firstProjectAccount$.subscribe(value => {
+      this.account = value;
+    });
+    if (userSession) {
       let projectData: any;
   
       if (this.isEditMode) {
@@ -105,15 +120,22 @@ export class AddProjectComponent implements OnInit, OnDestroy {
           (error) => {
             this.loading = false;
             console.error('Error updating project:', error);
+            if (error) {
+              this.snackBar.open('Server is not responding 😢.', 'Close', {
+                duration: 3000,
+                horizontalPosition: 'center',
+                verticalPosition: 'top',
+              });
+            }
           }
         );
   
       } else {
         projectData = {
           projectTitle: this.projectForm.value.title,
-          projectIniateDate: new Date().toISOString(), // Use the current date for a new project
-          statusId: 1, // Default status to 'Active'
-          projectAccountId: userSession.id,
+          projectIniateDate: new Date().toISOString(), 
+          statusId: 1, 
+          projectAccountId: this.account.id,
           description: this.projectForm.value.description
         };
   
@@ -125,12 +147,23 @@ export class AddProjectComponent implements OnInit, OnDestroy {
           (error) => {
             this.loading = false;
             console.error('Error adding project:', error);
+            if (error) {
+              this.snackBar.open('Server is not responding 😢.', 'Close', {
+                duration: 3000,
+                horizontalPosition: 'center',
+                verticalPosition: 'top',
+              });
+            }
           }
         );
       }
     } else {
       this.loading = false;
-      alert('User session has expired or is invalid. Please sign in again.');
+      this.snackBar.open('Server is not responding 😢.', 'Close', {
+        duration: 3000,
+        horizontalPosition: 'center',
+        verticalPosition: 'top',
+      });
       this.dialogRef.close();
     }
   }

@@ -16,7 +16,7 @@
             <mat-select-trigger>
               {{ getSelectedStatusesDisplay() }}
             </mat-select-trigger>
-            <mat-option value="All" >All</mat-option>
+            <mat-option value="All">All</mat-option>
             <mat-option *ngFor="let status of statusOptions" [value]="status.name">
               {{ status.name }}
             </mat-option>
@@ -42,8 +42,11 @@
       <mat-icon>refresh</mat-icon>
     </button>
 
-    <button mat-button [matMenuTriggerFor]="usernameMenu">{{ username }}</button>
+    <button mat-button [matMenuTriggerFor]="usernameMenu">{{ firstProjectAccount?.name || 'No Account' }}</button>
     <mat-menu #usernameMenu="matMenu">
+      <button mat-menu-item *ngFor="let account of remainingProjectAccounts" (click)="updateSelectedProjectAccount(account)">
+        {{ account.name }}
+      </button>
       <button mat-menu-item (click)="signOut()">Sign Out</button>
     </mat-menu>
   </div>

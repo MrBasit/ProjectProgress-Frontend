@@ -16,5 +16,12 @@ export class UserService {
       params: { Name: username }
     });
   }
+  loginUser(credendials: any){
+    const body = {
+      username: credendials.username,
+      password: credendials.password
+    }
+    return this.http.post(`${this.url}/api/Authentication/UserLogin`, body);
+  }
 
 }

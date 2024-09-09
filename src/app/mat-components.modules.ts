@@ -18,6 +18,8 @@ import {MatToolbarModule} from '@angular/material/toolbar';
 import {MatExpansionModule} from '@angular/material/expansion';
 import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
 import {MatMenuModule} from '@angular/material/menu';
+import {MatBadgeModule} from '@angular/material/badge';
+import {MatSnackBarModule} from '@angular/material/snack-bar';
 
 
 @NgModule({
@@ -42,7 +44,9 @@ import {MatMenuModule} from '@angular/material/menu';
     MatToolbarModule,
     MatExpansionModule,
     MatProgressSpinnerModule,
-    MatMenuModule
+    MatMenuModule,
+    MatBadgeModule,
+    MatSnackBarModule
   ]
 })
 export class MatComponentsModule { }

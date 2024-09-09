@@ -1,5 +1,6 @@
 import { Component, Inject, OnInit, OnDestroy } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { ProjectsService } from '../../services/projects.service';
 import { Subscription } from 'rxjs';
 
@@ -15,15 +16,16 @@ export class DeleteProjectComponent implements OnInit, OnDestroy {
   constructor(
     private dialogRef: MatDialogRef<DeleteProjectComponent>,
     private projectsService: ProjectsService,
+    private snackBar: MatSnackBar,
     @Inject(MAT_DIALOG_DATA) public project: any 
   ) { }
 
   ngOnInit(): void {}
 
   deleteProject() {
-    const userSession = JSON.parse(localStorage.getItem('userSession') || '{}');
+    const userSession = JSON.parse(localStorage.getItem('user') || '{}');
     
-    if (userSession && userSession.username) {
+    if (userSession) {
       this.loading = true; 
       this.deleteSubscription = this.projectsService.deleteProject(this.project.id).subscribe(
         (response) => {
@@ -31,12 +33,22 @@ export class DeleteProjectComponent implements OnInit, OnDestroy {
           this.loading = false; 
         },
         (error) => {
-          alert('An error occurred while deleting the project.');
-          this.loading = false; 
+          this.loading = false;
+          if (error) {
+            this.snackBar.open('Server is not responding 😢.', 'Close', {
+              duration: 3000,
+              horizontalPosition: 'center',
+              verticalPosition: 'top',
+            });
+          } 
         }
       );
     } else {
-      alert('User session has expired or is invalid. Please sign in again.');
+      this.snackBar.open('Server is not responding 😢.', 'Close', {
+        duration: 3000,
+        horizontalPosition: 'center',
+        verticalPosition: 'top',
+      });
       this.dialogRef.close();
     }
   }
