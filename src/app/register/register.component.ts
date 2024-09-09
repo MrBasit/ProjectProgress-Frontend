@@ -52,13 +52,13 @@ export class RegisterComponent {
           this.router.navigate(['/login']);
         },
         (error) => {
-          this.loading = false;
-          this.errorMessage = error.message;
-          setTimeout(() => {
-            this.errorMessage = '';
-          }, 3000); 
-          if (error) {
-            this.snackBar.open('Server is not responding 😢.', 'Close', {
+          if (error.status == 400 || error.status == 500) {
+            this.errorMessage = 'Server is not responding 😢.';
+            setTimeout(() => {
+              this.errorMessage = '';
+            }, 3000); 
+          } else {
+            this.snackBar.open(error.error.message + ' 😢.', 'Close', {
               duration: 3000,
               horizontalPosition: 'center',
               verticalPosition: 'top',

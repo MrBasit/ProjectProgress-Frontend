@@ -34,13 +34,19 @@ export class DeleteProjectComponent implements OnInit, OnDestroy {
         },
         (error) => {
           this.loading = false;
-          if (error) {
+          if (error.status == 400 || error.status == 500) {
             this.snackBar.open('Server is not responding 😢.', 'Close', {
               duration: 3000,
               horizontalPosition: 'center',
               verticalPosition: 'top',
             });
-          } 
+          } else {
+            this.snackBar.open(error.error.message + ' 😢.', 'Close', {
+              duration: 3000,
+              horizontalPosition: 'center',
+              verticalPosition: 'top',
+            });
+          }
         }
       );
     } else {

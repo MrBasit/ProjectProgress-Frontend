@@ -13,6 +13,8 @@ import { AuthGuardService } from './../../services/auth-guard.service';
 })
 export class NavbarComponent implements OnInit {
   username: string | null = '';
+  searchTerm: string = ''; 
+  selectedSortOption: string = ''; 
   statusOptions: { id: number, name: string }[] = [];
   selectedStatuses: string[] = [];
   allSelected = false;
@@ -61,24 +63,43 @@ export class NavbarComponent implements OnInit {
     }
   }
 
+  onReset() {
+    this.searchTerm = ''; 
+    this.eventService.PublishSearchTermChanged(this.searchTerm);
+
+    this.selectedSortOption = ''; 
+    this.eventService.PublishSortChanged(0); 
+
+    this.selectedStatuses = this.statusOptions.map(status => status.name);
+    this.allSelected = true;
+    this.onDropdownClosed(); 
+  }
+  
+
   loadStatuses() {
-    this.projectService.getStatuses().subscribe({
-      next: (response) => {
+    this.projectService.getStatuses().subscribe(
+      (response) => {
         this.statusOptions = response;
         this.selectedStatuses = this.statusOptions.map(status => status.name);
         this.allSelected = true; 
       },
-      error: (error) => {
+      (error) => {
         console.error('Failed to load statuses', error);
-        if (error) {
+        if (error.status == 400 || error.status == 500) {
           this.snackBar.open('Server is not responding 😢.', 'Close', {
+            duration: 3000,
+            horizontalPosition: 'center',
+            verticalPosition: 'top',
+          });
+        } else {
+          this.snackBar.open(error.error.message + ' 😢.', 'Close', {
             duration: 3000,
             horizontalPosition: 'center',
             verticalPosition: 'top',
           });
         }
       }
-    });
+    );
   }
 
   onSelectionChange(e: Event) {

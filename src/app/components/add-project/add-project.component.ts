@@ -78,9 +78,14 @@ export class AddProjectComponent implements OnInit, OnDestroy {
         this.statusOptions = response; 
       },
       (error) => {
-        console.error('Error loading status options:', error);
-        if (error) {
+        if (error.status == 400 || error.status == 500) {
           this.snackBar.open('Server is not responding 😢.', 'Close', {
+            duration: 3000,
+            horizontalPosition: 'center',
+            verticalPosition: 'top',
+          });
+        } else {
+          this.snackBar.open(error.error.message + ' 😢.', 'Close', {
             duration: 3000,
             horizontalPosition: 'center',
             verticalPosition: 'top',
@@ -119,9 +124,14 @@ export class AddProjectComponent implements OnInit, OnDestroy {
           },
           (error) => {
             this.loading = false;
-            console.error('Error updating project:', error);
-            if (error) {
+            if (error.status == 400 || error.status == 500) {
               this.snackBar.open('Server is not responding 😢.', 'Close', {
+                duration: 3000,
+                horizontalPosition: 'center',
+                verticalPosition: 'top',
+              });
+            } else {
+              this.snackBar.open(error.error.message + ' 😢.', 'Close', {
                 duration: 3000,
                 horizontalPosition: 'center',
                 verticalPosition: 'top',
@@ -146,9 +156,14 @@ export class AddProjectComponent implements OnInit, OnDestroy {
           },
           (error) => {
             this.loading = false;
-            console.error('Error adding project:', error);
-            if (error) {
+            if (error.status == 400 || error.status == 500) {
               this.snackBar.open('Server is not responding 😢.', 'Close', {
+                duration: 3000,
+                horizontalPosition: 'center',
+                verticalPosition: 'top',
+              });
+            } else {
+              this.snackBar.open(error.error.message + ' 😢.', 'Close', {
                 duration: 3000,
                 horizontalPosition: 'center',
                 verticalPosition: 'top',

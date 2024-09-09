@@ -47,8 +47,15 @@ export class LoginComponent {
             setTimeout(() => {
               this.errorMessage = '';
             }, 3000); 
-          } else {
+          }
+          else if(error.status == 400 || error.status == 500){
             this.snackBar.open('Server is not responding 😢.', 'Close', {
+              duration: 3000,
+              horizontalPosition: 'center',
+              verticalPosition: 'top',
+            });
+          }else {
+            this.snackBar.open(error.error.message + ' 😢.', 'Close', {
               duration: 3000,
               horizontalPosition: 'center',
               verticalPosition: 'top',

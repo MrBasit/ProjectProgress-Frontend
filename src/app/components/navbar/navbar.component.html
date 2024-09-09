@@ -6,13 +6,13 @@
   <div class="username">
     <div class="section2">
       <mat-form-field class="search-field">
-        <input matInput placeholder="Search by Title" (input)="onSearchTermChange($event)">
+        <input matInput placeholder="Search by Title" [(ngModel)]="searchTerm" (input)="onSearchTermChange($event)" [disabled]="!firstProjectAccount">
       </mat-form-field>
 
       <div class="status-dropdown">
         <mat-form-field class="multi-select">
           <mat-label>Status</mat-label>
-          <mat-select (closed)="onDropdownClosed()" multiple [(value)]="selectedStatuses" (selectionChange)="onSelectionChange($event)">
+          <mat-select (closed)="onDropdownClosed()" multiple [(value)]="selectedStatuses" (selectionChange)="onSelectionChange($event)" [disabled]="!firstProjectAccount">
             <mat-select-trigger>
               {{ getSelectedStatusesDisplay() }}
             </mat-select-trigger>
@@ -26,7 +26,7 @@
 
       <div class="dropdown">
         <mat-form-field>
-          <mat-select placeholder="Sort By" (selectionChange)="onSortChange($event.value)">
+          <mat-select placeholder="Sort By" [(ngModel)]="selectedSortOption" (selectionChange)="onSortChange($event.value)" [disabled]="!firstProjectAccount">
             <mat-option value="1">Status</mat-option>
             <mat-option value="2">Date</mat-option>
             <mat-option value="3">Title</mat-option>
@@ -35,11 +35,14 @@
       </div>
     </div>
 
-    <button class="btn" mat-icon-button color="primary" (click)="openAddProjectDialog()" matTooltip="Add Project" matTooltipPosition="before">
+    <button class="btn" mat-icon-button color="primary" (click)="openAddProjectDialog()" matTooltip="Add Project" matTooltipPosition="before" [disabled]="!firstProjectAccount">
       <mat-icon>add</mat-icon>
     </button>
-    <button class="btn" mat-icon-button color="primary" (click)="onRefresh()" matTooltip="Refresh" matTooltipPosition="before">
+    <button class="btn" mat-icon-button color="primary" (click)="onRefresh()" matTooltip="Refresh" matTooltipPosition="before" [disabled]="!firstProjectAccount">
       <mat-icon>refresh</mat-icon>
+    </button>
+    <button class="btn" mat-icon-button color="primary" (click)="onReset()" matTooltip="Reset Filters" matTooltipPosition="before" [disabled]="!firstProjectAccount">
+      <mat-icon>replay</mat-icon>
     </button>
 
     <button mat-button [matMenuTriggerFor]="usernameMenu">{{ firstProjectAccount?.name || 'No Account' }}</button>
