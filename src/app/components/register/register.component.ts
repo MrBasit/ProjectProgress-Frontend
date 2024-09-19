@@ -1,8 +1,8 @@
 import { Component } from '@angular/core';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-import { AuthGuardService } from '../services/auth-guard.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { AuthGuardService } from 'src/app/services/auth-guard.service';
 
 
 @Component({

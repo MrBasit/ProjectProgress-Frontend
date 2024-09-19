@@ -28,13 +28,12 @@ export class AuthGuardService {
     return false; 
   }
 
-  login(credentials: any) {
-    const body = {
-      username: credentials.username,
-      password: credentials.password
-    };
+  otpConfirmation(credentials: any){
+    const params = new HttpParams()
+    .set('Username', credentials.email)
+    .set('OTP', credentials.otp);
 
-    return this.http.post(`${this.url}/api/Authentication/UserLogin`, body).pipe(
+    return this.http.post(`${this.url}/api/Authentication/UserLogin2FA`, {}, {params}).pipe(
       concatMap((response: any) => {
         const userData = {
           token: response.token,
@@ -56,6 +55,37 @@ export class AuthGuardService {
         });
       })
     );
+  }
+
+  login(credentials: any) {
+    const body = {
+      username: credentials.username,
+      password: credentials.password
+    };
+
+    return this.http.post(`${this.url}/api/Authentication/UserLogin`, body)
+    // .pipe(
+    //   concatMap((response: any) => {
+    //     const userData = {
+    //       token: response.token,
+    //       userId: response.userId,
+    //       validity: response.validity
+    //     };
+
+    //     localStorage.setItem('user', JSON.stringify(userData));
+    //     return this.getUserAccounts(userData.userId);
+    //   }),
+    //   tap((response: any) => {
+    //     const accounts = response;
+    //     accounts.forEach((account: any) => {
+    //       const key = `projectAccount_${account.projectAccount.id}`;
+    //       localStorage.setItem(key, JSON.stringify({
+    //         id: account.projectAccount.id,
+    //         name: account.projectAccount.name
+    //       }));
+    //     });
+    //   })
+    // );
   }
 
   register(credentials: any){

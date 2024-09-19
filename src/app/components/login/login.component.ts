@@ -1,8 +1,8 @@
 import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-import { AuthGuardService } from '../services/auth-guard.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { AuthGuardService } from 'src/app/services/auth-guard.service';
 
 @Component({
   selector: 'app-login',
@@ -18,7 +18,7 @@ export class LoginComponent {
     private fb: FormBuilder,
     private router: Router,
     private authGuardService: AuthGuardService, 
-    private snackBar: MatSnackBar
+    private snackBar: MatSnackBar,
   ) {
     this.loginForm = this.fb.group({
       username: ['', Validators.required],
@@ -31,14 +31,16 @@ export class LoginComponent {
       this.loading = true;
       const credentials = this.loginForm.value;
       this.authGuardService.login(credentials).subscribe(
-        () => {
+        (response : any) => {
+          console.log(response)
+          localStorage.setItem('userEmail', credentials.username);
           this.loading = false
-          this.snackBar.open('Welcome back 🥳!!', 'Close', {
+          this.snackBar.open(response.message , 'Close', {
             duration: 3000,
             horizontalPosition: 'center',
             verticalPosition: 'top',
           });          
-          this.router.navigate(['/home']);
+          this.router.navigate(['/otp']);
         },
         (error) => {
           this.loading = false

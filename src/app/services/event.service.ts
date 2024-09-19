@@ -10,7 +10,7 @@ export class EventService {
   private OnRefresh = new Subject<boolean>(); 
   private OnAddProject = new Subject<boolean>(); 
   private ProjectSelected = new Subject<number>(); 
-  // private ProjectAccount = new Subject<any>(); 
+  private userEmail = new Subject<any>(); 
   private noProjects = new Subject<boolean>(); 
   private statusChange = new Subject<any[]>();
 
@@ -21,7 +21,7 @@ export class EventService {
   OnRefresh$ = this.OnRefresh.asObservable();
   OnAddProject$ = this.OnAddProject.asObservable();
   ProjectSelected$ = this.ProjectSelected.asObservable();
-  // ProjectAccount$ = this.ProjectAccount.asObservable();
+  userEmail$ = this.userEmail.asObservable();
   noProjects$ = this.noProjects.asObservable();
   statusChange$ = this.statusChange.asObservable();
 
@@ -47,9 +47,9 @@ export class EventService {
     this.ProjectSelected.next(value);
   }
 
-  // PublishProjectAccount(account: any) {
-  //   this.ProjectAccount.next(account);
-  // }
+  PublishUserEmail(email: string) {
+    this.userEmail.next(email);
+  }
 
   PublishNoProjects(value: boolean) {
     this.noProjects.next(value);

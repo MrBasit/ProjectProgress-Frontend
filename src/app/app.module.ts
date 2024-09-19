@@ -16,9 +16,10 @@ import { AddProjectComponent } from './components/add-project/add-project.compon
 import { DeleteProjectComponent } from './components/delete-project/delete-project.component';
 import { HttpClientModule } from '@angular/common/http';
 import { LoaderComponent } from './components/loader/loader.component';
-import { LoginComponent } from './login/login.component';
-import { RegisterComponent } from './register/register.component';
+import { LoginComponent } from './components/login/login.component';
+import { RegisterComponent } from './components/register/register.component';
 import { AuthGuard } from './auth.guard';
+import { OtpComponent } from './components/otp/otp.component';
 
 @NgModule({
   declarations: [
@@ -31,7 +32,8 @@ import { AuthGuard } from './auth.guard';
     DeleteProjectComponent,
     LoaderComponent,
     LoginComponent,
-    RegisterComponent
+    RegisterComponent,
+    OtpComponent
   ],
   imports: [
     BrowserModule,
@@ -44,6 +46,7 @@ import { AuthGuard } from './auth.guard';
       { path: '', redirectTo: '/home', pathMatch: 'full' },
       { path: 'home', component: HomeComponent, canActivate: [AuthGuard] }, 
       { path: 'login', component: LoginComponent },
+      { path: 'otp', component: OtpComponent},
       { path: 'register', component: RegisterComponent }
     ])
   ],
