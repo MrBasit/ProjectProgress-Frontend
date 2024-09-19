@@ -22,7 +22,7 @@ export class OtpComponent implements OnInit {
     private snackBar: MatSnackBar,
   ) {
     this.otpForm = this.fb.group({
-      email: [{value: '', disabled: true}, Validators.required], // Disabled by default
+      email: [{value: '', disabled: true}, Validators.required],
       otp: ['', [Validators.required, Validators.minLength(6)]]
     });
   }
