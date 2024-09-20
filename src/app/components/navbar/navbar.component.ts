@@ -140,7 +140,9 @@ export class NavbarComponent implements OnInit {
   }
 
   openAddProjectDialog() {
-    const dialogRef = this.dialog.open(AddProjectComponent);
+    const dialogRef = this.dialog.open(AddProjectComponent, {
+      autoFocus: false
+    });
     dialogRef.afterClosed().subscribe(result => {
       if (result === 'confirm') {
         this.eventService.PublishOnAddProject(true);

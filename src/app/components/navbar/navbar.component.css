@@ -9,6 +9,7 @@
 img{
   width: auto;
   height: 50px;
+  cursor: pointer;
 }
 
 .section2{

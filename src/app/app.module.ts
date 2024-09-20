@@ -22,6 +22,8 @@ import { AuthGuard } from './auth.guard';
 import { OtpComponent } from './components/otp/otp.component';
 import { SignOutComponent } from './components/sign-out/sign-out.component';
 import { OtpGuard } from './otp.guard';
+import { HashLocationStrategy, LocationStrategy } from '@angular/common';
+import { LoginGuard } from './login.guard';
 
 @NgModule({
   declarations: [
@@ -47,13 +49,13 @@ import { OtpGuard } from './otp.guard';
     HttpClientModule,
     RouterModule.forRoot([
       { path: '', redirectTo: '/home', pathMatch: 'full' },
-      { path: 'register', component: RegisterComponent },
-      { path: 'login', component: LoginComponent },
+      { path: 'register', component: RegisterComponent, canActivate: [LoginGuard]  },
+      { path: 'login', component: LoginComponent, canActivate: [LoginGuard]  },
       { path: 'otp', component: OtpComponent, canActivate: [OtpGuard] },
       { path: 'home', component: HomeComponent, canActivate: [OtpGuard, AuthGuard] }
     ])
   ],
-  providers: [DatePipe],
+  providers: [DatePipe, {provide: LocationStrategy, useClass: HashLocationStrategy}],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

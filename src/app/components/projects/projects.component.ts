@@ -168,6 +168,7 @@ export class ProjectsComponent implements OnInit, OnDestroy {
   openEditProject(event: Event, project: any) {
     event.stopPropagation();
     const dialogRef = this.dialog.open(AddProjectComponent, {
+      autoFocus: false,
       data: { project }
     });
 

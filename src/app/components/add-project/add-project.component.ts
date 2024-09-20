@@ -13,6 +13,18 @@ import { EventService } from 'src/app/services/event.service';
   styleUrls: ['./add-project.component.css']
 })
 export class AddProjectComponent implements OnInit, OnDestroy {
+  projectTypeOptions: string[] = [
+    'Web',
+    'SMM',
+    'Logo Design',
+    'Other'
+  ];
+  
+  contractTypeOptions: string[] = [
+    'Fixed',
+    'Hourly'
+  ];
+
   projectForm: FormGroup;
   account: any;
   currentDate: string = '';
@@ -35,6 +47,10 @@ export class AddProjectComponent implements OnInit, OnDestroy {
   ) {
     this.projectForm = this.fb.group({
       title: ['', Validators.required],
+      clientName: ['', Validators.required],
+      webOrAccountName: ['', Validators.required],
+      projectType: ['', Validators.required],
+      contractType: ['', Validators.required],
       description: ['', Validators.required],
       date: [{ value: '', disabled: true }],
       account: [{ value: '', disabled: true }],
@@ -44,6 +60,7 @@ export class AddProjectComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     const userSession = JSON.parse(localStorage.getItem('user') || '{}');
+    
     if (userSession) {
       this.eventService.firstProjectAccount$.subscribe(value => {
         this.account = value.name;
@@ -51,7 +68,7 @@ export class AddProjectComponent implements OnInit, OnDestroy {
       this.currentDate = new Date().toISOString();
       this.projectForm.patchValue({ date: this.currentDate, account: this.account });
     }
-
+  
     if (this.data && this.data.project) {
       this.isEditMode = true;
       this.statusFieldDisabled = false;
@@ -62,15 +79,36 @@ export class AddProjectComponent implements OnInit, OnDestroy {
         status: this.data.project.status.id,
         date: formattedDate
       });
+  
+      this.projectForm.get('clientName')?.clearValidators();
+      this.projectForm.get('webOrAccountName')?.clearValidators();
+      this.projectForm.get('projectType')?.clearValidators();
+      this.projectForm.get('contractType')?.clearValidators();
+      this.projectForm.get('title')?.setValidators(Validators.required);
+
     } else {
       const currentDate = this.datePipe.transform(new Date(), 'MMM d, yyyy');
       this.projectForm.patchValue({
         date: currentDate,
-        status: 1 
+        status: 1
       });
+  
+      this.projectForm.get('clientName')?.setValidators(Validators.required);
+      this.projectForm.get('webOrAccountName')?.setValidators(Validators.required);
+      this.projectForm.get('projectType')?.setValidators(Validators.required);
+      this.projectForm.get('contractType')?.setValidators(Validators.required);
+      this.projectForm.get('title')?.clearValidators();
     }
+  
+    this.projectForm.get('title')?.updateValueAndValidity();
+    this.projectForm.get('clientName')?.updateValueAndValidity();
+    this.projectForm.get('webOrAccountName')?.updateValueAndValidity();
+    this.projectForm.get('projectType')?.updateValueAndValidity();
+    this.projectForm.get('contractType')?.updateValueAndValidity();
+
     this.loadStatusOptions();
   }
+  
 
   loadStatusOptions() {
     this.statusSubscription = this.projectsService.getStatuses().subscribe(
@@ -140,8 +178,9 @@ export class AddProjectComponent implements OnInit, OnDestroy {
         );
   
       } else {
+        const name = this.projectForm.value.clientName + ' | ' + this.projectForm.value.webOrAccountName+ ' | ' +  this.projectForm.value.projectType+ ' | ' +  this.projectForm.value.contractType;
         projectData = {
-          projectTitle: this.projectForm.value.title,
+          projectTitle: name,
           projectIniateDate: new Date().toISOString(), 
           statusId: 1, 
           projectAccountId: this.account.id,

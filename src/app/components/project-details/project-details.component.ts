@@ -15,7 +15,7 @@ import { Subscription } from 'rxjs';
 export class ProjectDetailsComponent implements OnInit, OnDestroy {
   projectId: number | null = null;
   public project: any;
-  newProgress = { description: '' };
+  newProgress = { bill: '', progress:'', clientSatisfaction:'' };
   loading: boolean = false;
   progressArr: any[] = [];
   totalProgress: number = 0;
@@ -42,6 +42,11 @@ export class ProjectDetailsComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
+    this.newProgress = {
+      bill: 'Hourly Bill/Milestone Amount:',
+      clientSatisfaction: 'Client Satisfaction:', 
+      progress: 'Progress:'
+    };
     this.eventSubscription = this.eventService.ProjectSelected$.subscribe((projectId : number) => {
       if (projectId) {
         this.projectId = projectId;
@@ -130,15 +135,16 @@ export class ProjectDetailsComponent implements OnInit, OnDestroy {
     this.loading = true;
     const user = JSON.parse(localStorage.getItem('user') || '{}');
     if (user && this.project) {
+      const description = this.newProgress.bill + '<br>' + this.newProgress.progress + '<br>' + this.newProgress.clientSatisfaction
       const progressData = {
-        progress: this.newProgress.description,
+        progress: description,
         projectId: this.project.id
       };
 
       this.progressSubscription = this.progressService.addProgress(progressData).subscribe(
         () => {
           this.loading = false;
-          this.newProgress = { description: '' };
+          this.newProgress = { bill: '', progress:'', clientSatisfaction: '' };
           this.isAddProgressPanelExpanded = false; 
           this.isProgressPanelExpanded = true; 
           this.loadProgress();

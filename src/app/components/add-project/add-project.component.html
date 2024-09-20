@@ -1,19 +1,62 @@
 <h2>{{ isEditMode ? 'Edit Project' : 'Add New Project' }}</h2>
 <form [formGroup]="projectForm">
-  <mat-form-field appearance="fill">
+  <mat-form-field appearance="fill" style="width: 100%;">
     <mat-label>Account</mat-label>
     <input matInput formControlName="account" disabled>
   </mat-form-field>
 
-  <mat-form-field appearance="fill">
-    <mat-label>Title</mat-label>
-    <input matInput formControlName="title" placeholder="ClientName | WebOrAccountName | ProjectType | ContractType">
-    <mat-error *ngIf="projectForm.get('title')?.invalid && projectForm.get('title')?.touched">
-      Title is required
-    </mat-error>
-  </mat-form-field>
+    <mat-form-field appearance="fill" [ngStyle]="{ 'display': !isEditMode ? 'none' : 'inline-block' }" style="width: 100%;">
+      <mat-label>Title</mat-label>
+      <input matInput formControlName="title" placeholder="ClientName | WebOrAccountName | ProjectType | ContractType">
+      <mat-error *ngIf="projectForm.get('title')?.invalid && projectForm.get('title')?.touched">
+        Title is required
+      </mat-error>
+    </mat-form-field>
 
-  <mat-form-field appearance="fill">
+    <mat-form-field appearance="fill" [ngStyle]="{ 'display': isEditMode ? 'none' : 'inline-block' }" style="margin-right: 10px; width: 24%;">
+      <mat-label>ClientName</mat-label>
+      <input matInput formControlName="clientName" placeholder="ClientName">
+      <mat-error *ngIf="projectForm.get('clientName')?.invalid && projectForm.get('clientName')?.touched">
+        ClientName is required
+      </mat-error>
+    </mat-form-field>
+  
+
+    <mat-form-field appearance="fill" [ngStyle]="{ 'display': isEditMode ? 'none' : 'inline-block' }" style="margin-right: 10px; width: 24%;">
+      <mat-label>WebOrAccountName</mat-label>
+      <input matInput formControlName="webOrAccountName" placeholder="WebOrAccountName">
+      <mat-error *ngIf="projectForm.get('webOrAccountName')?.invalid && projectForm.get('webOrAccountName')?.touched">
+        WebOrAccountName is required
+      </mat-error>
+    </mat-form-field>
+  
+
+    <mat-form-field appearance="fill" [ngStyle]="{ 'display': isEditMode ? 'none' : 'inline-block' }" style="margin-right: 10px; width: 24.5%;">
+      <mat-label>Project Type</mat-label>
+      <mat-select formControlName="projectType">
+        <mat-option *ngFor="let type of projectTypeOptions" [value]="type">
+          {{ type }}
+        </mat-option>
+      </mat-select>
+      <mat-error *ngIf="projectForm.get('projectType')?.invalid && projectForm.get('projectType')?.touched">
+        ProjectType is required
+      </mat-error>
+    </mat-form-field>
+    
+    <mat-form-field appearance="fill" [ngStyle]="{ 'display': isEditMode ? 'none' : 'inline-block' }" style="width: 24.5%;">
+      <mat-label>Contract Type</mat-label>
+      <mat-select formControlName="contractType">
+        <mat-option *ngFor="let contract of contractTypeOptions" [value]="contract">
+          {{ contract }}
+        </mat-option>
+      </mat-select>
+      <mat-error *ngIf="projectForm.get('contractType')?.invalid && projectForm.get('contractType')?.touched">
+        ContractType is required
+      </mat-error>
+    </mat-form-field>
+    
+
+  <mat-form-field appearance="fill" style="width: 100%;">
     <mat-label>Status</mat-label>
     <mat-select formControlName="status" [disabled]="statusFieldDisabled"> 
       <mat-option *ngFor="let status of statusOptions" [value]="status.id">
@@ -25,15 +68,15 @@
     </mat-error>
   </mat-form-field>
 
-  <mat-form-field appearance="fill">
+  <mat-form-field appearance="fill" style="width: 100%;">
     <mat-label>Description</mat-label>
-    <textarea matInput formControlName="description" rows="2" placeholder="Link:&#10;Description:" class="custom-description"></textarea>
+    <textarea matInput formControlName="description" rows="5" placeholder="Link:&#10;Description:" class="custom-description"></textarea>
     <mat-error *ngIf="projectForm.get('description')?.invalid && projectForm.get('description')?.touched">
       Description is required
     </mat-error>
   </mat-form-field>
 
-  <mat-form-field appearance="fill">
+  <mat-form-field appearance="fill" style="width: 100%;">
     <mat-label>Date</mat-label>
     <input matInput formControlName="date" disabled>
   </mat-form-field>
