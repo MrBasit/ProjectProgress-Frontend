@@ -30,10 +30,9 @@ export class LoginComponent {
     if (this.loginForm.valid) {
       this.loading = true;
       const credentials = this.loginForm.value;
+      localStorage.setItem('userEmail', credentials.username);
       this.authGuardService.login(credentials).subscribe(
         (response : any) => {
-          console.log(response)
-          localStorage.setItem('userEmail', credentials.username);
           this.loading = false
           this.snackBar.open(response.message , 'Close', {
             duration: 3000,
@@ -44,13 +43,14 @@ export class LoginComponent {
         },
         (error) => {
           this.loading = false
+          localStorage.removeItem('userEmail');
           if (error.status === 401) {
             this.errorMessage = 'Username or password is incorrect 😢.';
             setTimeout(() => {
               this.errorMessage = '';
             }, 3000); 
           }
-          else if(error.status == 400 || error.status == 500){
+          else if(error.status == 400 || error.status == 500 || error.status == 0){
             this.snackBar.open('Server is not responding 😢.', 'Close', {
               duration: 3000,
               horizontalPosition: 'center',

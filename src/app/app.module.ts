@@ -20,6 +20,8 @@ import { LoginComponent } from './components/login/login.component';
 import { RegisterComponent } from './components/register/register.component';
 import { AuthGuard } from './auth.guard';
 import { OtpComponent } from './components/otp/otp.component';
+import { SignOutComponent } from './components/sign-out/sign-out.component';
+import { OtpGuard } from './otp.guard';
 
 @NgModule({
   declarations: [
@@ -33,7 +35,8 @@ import { OtpComponent } from './components/otp/otp.component';
     LoaderComponent,
     LoginComponent,
     RegisterComponent,
-    OtpComponent
+    OtpComponent,
+    SignOutComponent
   ],
   imports: [
     BrowserModule,
@@ -44,10 +47,10 @@ import { OtpComponent } from './components/otp/otp.component';
     HttpClientModule,
     RouterModule.forRoot([
       { path: '', redirectTo: '/home', pathMatch: 'full' },
-      { path: 'home', component: HomeComponent, canActivate: [AuthGuard] }, 
+      { path: 'register', component: RegisterComponent },
       { path: 'login', component: LoginComponent },
-      { path: 'otp', component: OtpComponent},
-      { path: 'register', component: RegisterComponent }
+      { path: 'otp', component: OtpComponent, canActivate: [OtpGuard] },
+      { path: 'home', component: HomeComponent, canActivate: [OtpGuard, AuthGuard] }
     ])
   ],
   providers: [DatePipe],

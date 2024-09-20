@@ -7,7 +7,7 @@
 
   <mat-form-field appearance="fill">
     <mat-label>Title</mat-label>
-    <input matInput formControlName="title" placeholder="Client Name - Project name">
+    <input matInput formControlName="title" placeholder="ClientName | WebOrAccountName | ProjectType | ContractType">
     <mat-error *ngIf="projectForm.get('title')?.invalid && projectForm.get('title')?.touched">
       Title is required
     </mat-error>
@@ -27,7 +27,7 @@
 
   <mat-form-field appearance="fill">
     <mat-label>Description</mat-label>
-    <textarea matInput formControlName="description" placeholder="Brief description about the project."></textarea>
+    <textarea matInput formControlName="description" rows="2" placeholder="Link:&#10;Description:" class="custom-description"></textarea>
     <mat-error *ngIf="projectForm.get('description')?.invalid && projectForm.get('description')?.touched">
       Description is required
     </mat-error>

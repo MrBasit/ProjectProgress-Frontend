@@ -79,7 +79,7 @@ export class ProjectDetailsComponent implements OnInit, OnDestroy {
         },
         (error) => {
           this.loading = false;
-          if (error.status == 400 || error.status == 500) {
+          if (error.status == 400 || error.status == 500 || error.status == 0) {
             this.snackBar.open('Server is not responding 😢.', 'Close', {
               duration: 3000,
               horizontalPosition: 'center',
@@ -108,7 +108,7 @@ export class ProjectDetailsComponent implements OnInit, OnDestroy {
         (error) => {
           console.error('Error fetching project:', error);
           this.loadingComp = false;
-          if (error.status == 400 || error.status == 500) {
+          if (error.status == 400 || error.status == 500 || error.status == 0) {
             this.snackBar.open('Server is not responding 😢.', 'Close', {
               duration: 3000,
               horizontalPosition: 'center',
@@ -128,8 +128,8 @@ export class ProjectDetailsComponent implements OnInit, OnDestroy {
 
   addProgress(): void {
     this.loading = true;
-    const userSession = JSON.parse(localStorage.getItem('userSession') || '{}');
-    if (userSession && this.project) {
+    const user = JSON.parse(localStorage.getItem('user') || '{}');
+    if (user && this.project) {
       const progressData = {
         progress: this.newProgress.description,
         projectId: this.project.id
@@ -145,7 +145,7 @@ export class ProjectDetailsComponent implements OnInit, OnDestroy {
         },
         (error) => {
           this.loading = false;
-          if (error.status == 400 || error.status == 500) {
+          if (error.status == 400 || error.status == 500 || error.status == 0) {
             this.snackBar.open('Server is not responding 😢.', 'Close', {
               duration: 3000,
               horizontalPosition: 'center',

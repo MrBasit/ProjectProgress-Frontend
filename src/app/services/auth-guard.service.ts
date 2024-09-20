@@ -12,7 +12,7 @@ export class AuthGuardService {
 
   constructor(private http: HttpClient, private router: Router) { }
 
-  isLoggedIn(): boolean {
+  isOtpConfirmed(): boolean {
     const user = JSON.parse(localStorage.getItem('user') || '{}');
     
     if (user.token && user.validity) {
@@ -26,6 +26,18 @@ export class AuthGuardService {
       }
     }
     return false; 
+  }
+
+  isLoggedIn(): boolean{
+    const userEmail = localStorage.getItem('userEmail');
+    
+    if (userEmail){
+      return true;
+    } 
+    else{
+      this.logout()    
+    }
+    return false;
   }
 
   otpConfirmation(credentials: any){
@@ -105,6 +117,7 @@ export class AuthGuardService {
   
   logout(): void {
     localStorage.removeItem('user');
+    localStorage.removeItem('userEmail');
     const keys = Object.keys(localStorage);
     keys.forEach(key => {
       if (key.startsWith('projectAccount_')) {

@@ -59,7 +59,7 @@ export class OtpComponent implements OnInit {
               this.errorMessage = '';
             }, 3000); 
           }
-          else if(error.status == 400 || error.status == 500){
+          else if(error.status == 400 || error.status == 500 || error.status == 0){
             this.snackBar.open('Server is not responding 😢.', 'Close', {
               duration: 3000,
               horizontalPosition: 'center',

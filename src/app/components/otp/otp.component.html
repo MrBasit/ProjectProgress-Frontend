@@ -7,11 +7,9 @@
     <mat-card-content>
       <form [formGroup]="otpForm" (ngSubmit)="onSubmit()">
         <mat-form-field appearance="fill">
-          <mat-label>Email</mat-label>
+          <mat-label>Email or Username</mat-label>
           <div style="display: flex; align-items: center;">
-            <input matInput placeholder="Enter your email" formControlName="email" [attr.disabled]="true" style="flex: 1;" />
-            <!-- <button class="changeEmail" mat-icon-button (click)="navigateToLogin()">
-            </button> -->
+            <input matInput formControlName="email" [attr.disabled]="true" style="flex: 1;" />
             <mat-icon (click)="navigateToLogin()">login</mat-icon>
 
           </div>

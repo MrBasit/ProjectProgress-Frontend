@@ -121,3 +121,7 @@ mat-card-content{
 .text-cancelled {
   color: #E4003A
 }
+
+.project-description {
+  white-space: pre-wrap;
+}

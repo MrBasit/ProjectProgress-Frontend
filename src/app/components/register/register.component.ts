@@ -13,7 +13,6 @@ import { AuthGuardService } from 'src/app/services/auth-guard.service';
 export class RegisterComponent {
   loading: boolean = false;
   registerForm: FormGroup;
-  errorMessage: string = '';
 
   passwordHasUppercase: boolean = false;
   passwordHasLowercase: boolean = false;
@@ -52,11 +51,13 @@ export class RegisterComponent {
           this.router.navigate(['/login']);
         },
         (error) => {
-          if (error.status == 400 || error.status == 500) {
-            this.errorMessage = 'Server is not responding 😢.';
-            setTimeout(() => {
-              this.errorMessage = '';
-            }, 3000); 
+          this.loading = false;
+          if (error.status == 0 || error.status == 500 || error.status == 400) {
+            this.snackBar.open('Server is not responding 😢.', 'Close', {
+              duration: 3000,
+              horizontalPosition: 'center',
+              verticalPosition: 'top',
+            });
           } else {
             this.snackBar.open(error.error.message + ' 😢.', 'Close', {
               duration: 3000,

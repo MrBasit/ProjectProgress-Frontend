@@ -78,7 +78,7 @@ export class AddProjectComponent implements OnInit, OnDestroy {
         this.statusOptions = response; 
       },
       (error) => {
-        if (error.status == 400 || error.status == 500) {
+        if (error.status == 400 || error.status == 500 || error.status == 0) {
           this.snackBar.open('Server is not responding 😢.', 'Close', {
             duration: 3000,
             horizontalPosition: 'center',
@@ -106,7 +106,6 @@ export class AddProjectComponent implements OnInit, OnDestroy {
   
       if (this.isEditMode) {
         const selectedStatus = this.statusOptions.find(status => status.id === this.projectForm.value.status);
-        console.log(selectedStatus)
         projectData = {
           id: this.data.project.id, 
           title: this.projectForm.value.title,
@@ -124,7 +123,7 @@ export class AddProjectComponent implements OnInit, OnDestroy {
           },
           (error) => {
             this.loading = false;
-            if (error.status == 400 || error.status == 500) {
+            if (error.status == 400 || error.status == 500 || error.status == 0) {
               this.snackBar.open('Server is not responding 😢.', 'Close', {
                 duration: 3000,
                 horizontalPosition: 'center',
@@ -156,7 +155,7 @@ export class AddProjectComponent implements OnInit, OnDestroy {
           },
           (error) => {
             this.loading = false;
-            if (error.status == 400 || error.status == 500) {
+            if (error.status == 400 || error.status == 500 || error.status == 0) {
               this.snackBar.open('Server is not responding 😢.', 'Close', {
                 duration: 3000,
                 horizontalPosition: 'center',
@@ -174,7 +173,7 @@ export class AddProjectComponent implements OnInit, OnDestroy {
       }
     } else {
       this.loading = false;
-      this.snackBar.open('Server is not responding 😢.', 'Close', {
+      this.snackBar.open('UserSeesion not found. Kindly, login again 😢.', 'Close', {
         duration: 3000,
         horizontalPosition: 'center',
         verticalPosition: 'top',

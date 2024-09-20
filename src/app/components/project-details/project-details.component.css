@@ -117,3 +117,7 @@ mat-expansion-panel {
   display: inline-block; 
   vertical-align: middle; 
 }
+
+.progress-description, .project-description {
+  white-space: pre-wrap;
+}

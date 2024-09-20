@@ -5,6 +5,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { EventService } from 'src/app/services/event.service';
 import { ProjectsService } from 'src/app/services/projects.service';
 import { AuthGuardService } from './../../services/auth-guard.service';
+import { SignOutComponent } from '../sign-out/sign-out.component';
 
 @Component({
   selector: 'navbar',
@@ -12,7 +13,6 @@ import { AuthGuardService } from './../../services/auth-guard.service';
   styleUrls: ['./navbar.component.css']
 })
 export class NavbarComponent implements OnInit {
-  username: string | null = '';
   searchTerm: string = ''; 
   selectedSortOption: string = ''; 
   statusOptions: { id: number, name: string }[] = [];
@@ -27,19 +27,12 @@ export class NavbarComponent implements OnInit {
     private dialog: MatDialog,
     private eventService: EventService,
     private projectService: ProjectsService,
-    private authService: AuthGuardService,
     private snackBar: MatSnackBar
   ) {}
 
   ngOnInit(): void {
     this.loadProjectAccounts();
     this.loadStatuses();
-    const userSession = JSON.parse(localStorage.getItem('userSession') || '{}');
-    if (userSession && userSession.expiration > new Date().getTime()) {
-      this.username = userSession.username;
-    } else {
-      this.username = null;
-    }
   }
 
   loadProjectAccounts() {
@@ -85,7 +78,7 @@ export class NavbarComponent implements OnInit {
       },
       (error) => {
         console.error('Failed to load statuses', error);
-        if (error.status == 400 || error.status == 500) {
+        if (error.status == 400 || error.status == 500 || error.status == 0) {
           this.snackBar.open('Server is not responding 😢.', 'Close', {
             duration: 3000,
             horizontalPosition: 'center',
@@ -149,7 +142,6 @@ export class NavbarComponent implements OnInit {
   openAddProjectDialog() {
     const dialogRef = this.dialog.open(AddProjectComponent);
     dialogRef.afterClosed().subscribe(result => {
-      console.log(`Dialog result: ${result}`);
       if (result === 'confirm') {
         this.eventService.PublishOnAddProject(true);
       }
@@ -166,7 +158,16 @@ export class NavbarComponent implements OnInit {
   }
 
   signOut() {
-    this.authService.logout();
+    const dialogRef = this.dialog.open(SignOutComponent, {});
+    dialogRef.afterClosed().subscribe(result => {
+      if (result === 'confirm') {
+        this.snackBar.open('Logged out successfully. We hope to see you again soon! 😊.', 'Close', {
+          duration: 3000,
+          horizontalPosition: 'center',
+          verticalPosition: 'top',
+        });
+      }
+    });
   }
 
   updateSelectedProjectAccount(account: { id: number, name: string }) {

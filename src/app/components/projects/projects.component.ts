@@ -128,9 +128,8 @@ export class ProjectsComponent implements OnInit, OnDestroy {
           this.loadingProjects = false;
         },
         (error) => {
-          console.log(error)
           this.loadingProjects = false;
-          if (error.status == 400 || error.status == 500) {
+          if (error.status == 400 || error.status == 500 || error.status == 0) {
             this.snackBar.open('Server is not responding 😢.', 'Close', {
               duration: 3000,
               horizontalPosition: 'center',
@@ -152,7 +151,6 @@ export class ProjectsComponent implements OnInit, OnDestroy {
   
   deleteProject(event: Event, project: any): void {
     event.stopPropagation();
-    console.log(project);
     const dialogRef = this.dialog.open(DeleteProjectComponent, {
       data: project
     });

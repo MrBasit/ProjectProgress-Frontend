@@ -7,7 +7,7 @@
     <h3>{{ project.title }}</h3>
     <div>
       <p><strong>{{ project.status.name }}</strong> | {{ project.projectIniateDate | date }}</p>
-      <p>{{ project.description }}</p>
+      <p class="project-description">{{ project.description }}</p>
 
       <mat-accordion>
         <mat-expansion-panel [(expanded)]="isAddProgressPanelExpanded">
@@ -23,7 +23,7 @@
           <form (ngSubmit)="addProgress()" #progressForm="ngForm">
             <mat-form-field appearance="fill">
               <mat-label>Description</mat-label>
-              <textarea matInput [(ngModel)]="newProgress.description" name="description" required></textarea>
+              <textarea matInput [(ngModel)]="newProgress.description" name="description" rows="3" placeholder="Hourly Bill/Milestone Amount:&#10;Progress:&#10;Client Satisfaction:" required></textarea>
               <mat-error *ngIf="progressForm.controls['description']?.invalid && progressForm.controls['description']?.touched">
                 Description is required
               </mat-error>
