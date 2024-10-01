@@ -3,6 +3,7 @@ import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ProjectsService } from '../../services/projects.service';
 import { Subscription } from 'rxjs';
+import { ErrorHandlerService } from 'src/app/services/error-handler.service';
 
 @Component({
   selector: 'app-delete-project',
@@ -17,6 +18,7 @@ export class DeleteProjectComponent implements OnInit, OnDestroy {
     private dialogRef: MatDialogRef<DeleteProjectComponent>,
     private projectsService: ProjectsService,
     private snackBar: MatSnackBar,
+    private errorHandler: ErrorHandlerService,
     @Inject(MAT_DIALOG_DATA) public project: any 
   ) { }
 
@@ -34,19 +36,7 @@ export class DeleteProjectComponent implements OnInit, OnDestroy {
         },
         (error) => {
           this.loading = false;
-          if (error.status == 400 || error.status == 500) {
-            this.snackBar.open('Server is not responding 😢.', 'Close', {
-              duration: 3000,
-              horizontalPosition: 'center',
-              verticalPosition: 'top',
-            });
-          } else {
-            this.snackBar.open(error.error.message + ' 😢.', 'Close', {
-              duration: 3000,
-              horizontalPosition: 'center',
-              verticalPosition: 'top',
-            });
-          }
+          this.errorHandler.handleError(error)
         }
       );
     } else {

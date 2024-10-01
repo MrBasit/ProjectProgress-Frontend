@@ -25,13 +25,14 @@
             OTP is required
           </mat-error>
         </mat-form-field>
+        <mat-error *ngIf="errorMessage">{{ errorMessage }}</mat-error>
+        <mat-card-actions>
+          <button *ngIf="!loading" mat-raised-button color="primary" type="submit" [disabled]="!otpForm.valid" (click)="onSubmit()">Confirm OTP</button>
+          <loader [loading]="loading" [ngClass]="{'loader': loading}"></loader>
+        </mat-card-actions>
       </form>
-      <mat-error *ngIf="errorMessage">{{ errorMessage }}</mat-error>
     </mat-card-content>
     
-    <mat-card-actions>
-      <button *ngIf="!loading" mat-raised-button color="primary" type="submit" [disabled]="!otpForm.valid" (click)="onSubmit()">Confirm OTP</button>
-      <loader [loading]="loading" [ngClass]="{'loader': loading}"></loader>
-    </mat-card-actions>
+    
   </mat-card>
 </div>

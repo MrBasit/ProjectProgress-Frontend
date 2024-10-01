@@ -14,7 +14,7 @@ import { ProjectsComponent } from './components/projects/projects.component';
 import { ProjectDetailsComponent } from './components/project-details/project-details.component';
 import { AddProjectComponent } from './components/add-project/add-project.component';
 import { DeleteProjectComponent } from './components/delete-project/delete-project.component';
-import { HttpClientModule } from '@angular/common/http';
+import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
 import { LoaderComponent } from './components/loader/loader.component';
 import { LoginComponent } from './components/login/login.component';
 import { RegisterComponent } from './components/register/register.component';
@@ -24,6 +24,8 @@ import { SignOutComponent } from './components/sign-out/sign-out.component';
 import { OtpGuard } from './otp.guard';
 import { HashLocationStrategy, LocationStrategy } from '@angular/common';
 import { LoginGuard } from './login.guard';
+import { ProjectAccountTemplatesComponent } from './components/project-account-templates/project-account-templates.component';
+import { AuthInterceptor } from './auth.interceptor';
 
 @NgModule({
   declarations: [
@@ -38,7 +40,8 @@ import { LoginGuard } from './login.guard';
     LoginComponent,
     RegisterComponent,
     OtpComponent,
-    SignOutComponent
+    SignOutComponent,
+    ProjectAccountTemplatesComponent
   ],
   imports: [
     BrowserModule,
@@ -55,7 +58,15 @@ import { LoginGuard } from './login.guard';
       { path: 'home', component: HomeComponent, canActivate: [OtpGuard, AuthGuard] }
     ])
   ],
-  providers: [DatePipe, {provide: LocationStrategy, useClass: HashLocationStrategy}],
+  providers: [
+    DatePipe, 
+    {provide: LocationStrategy, useClass: HashLocationStrategy},
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: AuthInterceptor,
+      multi: true
+    }
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

@@ -11,3 +11,6 @@ h2{
 .custom-description {
   white-space: pre-wrap;
 }
+mat-icon{
+  cursor: pointer;
+}

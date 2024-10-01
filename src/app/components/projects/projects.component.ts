@@ -7,6 +7,7 @@ import { EventService } from 'src/app/services/event.service';
 import { Subscription } from 'rxjs';
 import { DeleteProjectComponent } from '../delete-project/delete-project.component';
 import { AddProjectComponent } from '../add-project/add-project.component';
+import { ErrorHandlerService } from 'src/app/services/error-handler.service';
 
 @Component({
   selector: 'projects',
@@ -22,12 +23,7 @@ export class ProjectsComponent implements OnInit, OnDestroy {
   noProjects: boolean = false;
   account: any;
   statuses = [
-    { id: 1, name: "Active" },
-    { id: 2, name: "Hold" },
-    { id: 3, name: "Pause" },
-    { id: 4, name: "Completed" },
-    { id: 5, name: "Cancelled" },
-    { id: 6, name: "Deleted" }
+    { id: 1, name: "Active" }
   ];
   statusesArray: Array<{ id: number, name: string }> = this.statuses;
 
@@ -40,7 +36,13 @@ export class ProjectsComponent implements OnInit, OnDestroy {
   private projectsSubscription: Subscription | undefined;
   private subscriptions: Subscription[] = [];
 
-  constructor(private projectsService: ProjectsService, private dialog: MatDialog, private eventService: EventService, private snackBar: MatSnackBar) {}
+  constructor(
+    private projectsService: ProjectsService, 
+    private dialog: MatDialog, 
+    private eventService: EventService, 
+    private errorHandler: ErrorHandlerService,
+    private snackBar: MatSnackBar
+  ) {}
 
   ngOnInit(): void {
     const firstProjectAccount$ = this.eventService.firstProjectAccount$;
@@ -71,7 +73,7 @@ export class ProjectsComponent implements OnInit, OnDestroy {
     this.subscriptions.push(
       this.eventService.statusChange$.subscribe(
         (arr: any) => {
-          this.statusesArray = arr.length === 0 ? this.statuses : arr;
+          this.statusesArray = arr;
           this.loadProjects();
         }
       )
@@ -129,19 +131,7 @@ export class ProjectsComponent implements OnInit, OnDestroy {
         },
         (error) => {
           this.loadingProjects = false;
-          if (error.status == 400 || error.status == 500 || error.status == 0) {
-            this.snackBar.open('Server is not responding 😢.', 'Close', {
-              duration: 3000,
-              horizontalPosition: 'center',
-              verticalPosition: 'top',
-            });
-          } else {
-            this.snackBar.open(error.error.message + ' 😢.', 'Close', {
-              duration: 3000,
-              horizontalPosition: 'center',
-              verticalPosition: 'top',
-            });
-          }
+          this.errorHandler.handleError(error)
         }
       );
     } else {
@@ -181,6 +171,7 @@ export class ProjectsComponent implements OnInit, OnDestroy {
       }
     });
   }
+  
 
   onPaginateChange(event: any): void {
     this.pageIndex = event.pageIndex;

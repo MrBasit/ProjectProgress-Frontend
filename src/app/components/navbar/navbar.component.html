@@ -35,6 +35,9 @@
       </div>
     </div>
 
+    <button class="btn" mat-icon-button color="primary" (click)="openTemplateDialog()" matTooltip="Templates" matTooltipPosition="before" [disabled]="!firstProjectAccount">
+      <mat-icon>description</mat-icon>
+    </button>
     <button class="btn" mat-icon-button color="primary" (click)="openAddProjectDialog()" matTooltip="Add Project" matTooltipPosition="before" [disabled]="!firstProjectAccount">
       <mat-icon>add</mat-icon>
     </button>

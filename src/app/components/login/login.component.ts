@@ -3,6 +3,8 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { AuthGuardService } from 'src/app/services/auth-guard.service';
+import { ErrorHandlerService } from 'src/app/services/error-handler.service';
+import { SuccessHandlerService } from 'src/app/services/success-handler.service';
 
 @Component({
   selector: 'app-login',
@@ -18,6 +20,8 @@ export class LoginComponent {
     private fb: FormBuilder,
     private router: Router,
     private authGuardService: AuthGuardService, 
+    private errorHandler: ErrorHandlerService,
+    private sucessHandler: SuccessHandlerService,
     private snackBar: MatSnackBar,
   ) {
     this.loginForm = this.fb.group({
@@ -34,15 +38,17 @@ export class LoginComponent {
       this.authGuardService.login(credentials).subscribe(
         (response : any) => {
           this.loading = false
-          this.snackBar.open(response.message , 'Close', {
-            duration: 3000,
-            horizontalPosition: 'center',
-            verticalPosition: 'top',
-          });          
-          this.router.navigate(['/otp']);
+          this.sucessHandler.handleSuccess(response.message)
+          // this.snackBar.open(response.message , 'Close', {
+          //   duration: 3000,
+          //   horizontalPosition: 'center',
+          //   verticalPosition: 'top',
+          // });          
+          this.router.navigate(['/home']);
         },
         (error) => {
           this.loading = false
+          console.log(error)
           localStorage.removeItem('userEmail');
           if (error.status === 401) {
             this.errorMessage = 'Username or password is incorrect 😢.';
@@ -50,18 +56,8 @@ export class LoginComponent {
               this.errorMessage = '';
             }, 3000); 
           }
-          else if(error.status == 400 || error.status == 500 || error.status == 0){
-            this.snackBar.open('Server is not responding 😢.', 'Close', {
-              duration: 3000,
-              horizontalPosition: 'center',
-              verticalPosition: 'top',
-            });
-          }else {
-            this.snackBar.open(error.error.message + ' 😢.', 'Close', {
-              duration: 3000,
-              horizontalPosition: 'center',
-              verticalPosition: 'top',
-            });
+          else {
+            this.errorHandler.handleError(error)
           }
         }
       );

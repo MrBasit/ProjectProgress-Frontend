@@ -39,7 +39,10 @@ mat-card-actions{
   margin-bottom: 10px;
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;
+}
+.mat-card-actions{
+  padding-bottom: 0px!important;
 }
 button{
   margin: 10px !important;

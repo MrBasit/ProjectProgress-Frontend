@@ -3,6 +3,8 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
 import { AuthGuardService } from 'src/app/services/auth-guard.service';
+import { ErrorHandlerService } from 'src/app/services/error-handler.service';
+import { SuccessHandlerService } from 'src/app/services/success-handler.service';
 
 @Component({
   selector: 'app-otp',
@@ -19,6 +21,8 @@ export class OtpComponent implements OnInit {
     private fb: FormBuilder,
     private router: Router,
     private authGuardService: AuthGuardService, 
+    private errorHandler: ErrorHandlerService,
+    private sucessHandler: SuccessHandlerService,
     private snackBar: MatSnackBar,
   ) {
     this.otpForm = this.fb.group({
@@ -44,11 +48,7 @@ export class OtpComponent implements OnInit {
       this.authGuardService.otpConfirmation(finalCredentials).subscribe(
         () => {
           this.loading = false
-          this.snackBar.open('Welcome back 🥳!!', 'Close', {
-            duration: 3000,
-            horizontalPosition: 'center',
-            verticalPosition: 'top',
-          });          
+          this.sucessHandler.handleSuccess("Welcome back 🥳!!")
           this.router.navigate(['/home']);
         },
         (error) => {
@@ -59,18 +59,8 @@ export class OtpComponent implements OnInit {
               this.errorMessage = '';
             }, 3000); 
           }
-          else if(error.status == 400 || error.status == 500 || error.status == 0){
-            this.snackBar.open('Server is not responding 😢.', 'Close', {
-              duration: 3000,
-              horizontalPosition: 'center',
-              verticalPosition: 'top',
-            });
-          }else {
-            this.snackBar.open(error.error.message + ' 😢.', 'Close', {
-              duration: 3000,
-              horizontalPosition: 'center',
-              verticalPosition: 'top',
-            });
+          else {
+            this.errorHandler.handleError(error)
           }
         }
       );

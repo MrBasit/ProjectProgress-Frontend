@@ -6,6 +6,9 @@ import { EventService } from 'src/app/services/event.service';
 import { ProjectsService } from 'src/app/services/projects.service';
 import { AuthGuardService } from './../../services/auth-guard.service';
 import { SignOutComponent } from '../sign-out/sign-out.component';
+import { ProjectAccountTemplatesComponent } from './../project-account-templates/project-account-templates.component';
+import { ErrorHandlerService } from 'src/app/services/error-handler.service';
+import { SuccessHandlerService } from 'src/app/services/success-handler.service';
 
 @Component({
   selector: 'navbar',
@@ -27,12 +30,15 @@ export class NavbarComponent implements OnInit {
     private dialog: MatDialog,
     private eventService: EventService,
     private projectService: ProjectsService,
+    private errorHandler: ErrorHandlerService,
+    private sucessHandler: SuccessHandlerService,
     private snackBar: MatSnackBar
   ) {}
 
   ngOnInit(): void {
     this.loadProjectAccounts();
     this.loadStatuses();
+    this.selectedSortOption = '2';
   }
 
   loadProjectAccounts() {
@@ -60,11 +66,12 @@ export class NavbarComponent implements OnInit {
     this.searchTerm = ''; 
     this.eventService.PublishSearchTermChanged(this.searchTerm);
 
-    this.selectedSortOption = ''; 
-    this.eventService.PublishSortChanged(0); 
+    this.selectedSortOption = '2'; 
+    this.eventService.PublishSortChanged(2); 
 
-    this.selectedStatuses = this.statusOptions.map(status => status.name);
-    this.allSelected = true;
+    const activeStatus = this.statusOptions.find(status => status.name === 'Active');
+    this.selectedStatuses = [activeStatus.name];
+    this.allSelected = false
     this.onDropdownClosed(); 
   }
   
@@ -73,24 +80,13 @@ export class NavbarComponent implements OnInit {
     this.projectService.getStatuses().subscribe(
       (response) => {
         this.statusOptions = response;
-        this.selectedStatuses = this.statusOptions.map(status => status.name);
-        this.allSelected = true; 
+        const activeStatus = this.statusOptions.find(status => status.name === 'Active');
+        this.selectedStatuses = [activeStatus.name];
+        // this.allSelected = true; 
       },
       (error) => {
         console.error('Failed to load statuses', error);
-        if (error.status == 400 || error.status == 500 || error.status == 0) {
-          this.snackBar.open('Server is not responding 😢.', 'Close', {
-            duration: 3000,
-            horizontalPosition: 'center',
-            verticalPosition: 'top',
-          });
-        } else {
-          this.snackBar.open(error.error.message + ' 😢.', 'Close', {
-            duration: 3000,
-            horizontalPosition: 'center',
-            verticalPosition: 'top',
-          });
-        }
+        this.errorHandler.handleError(error)
       }
     );
   }
@@ -163,11 +159,7 @@ export class NavbarComponent implements OnInit {
     const dialogRef = this.dialog.open(SignOutComponent, {});
     dialogRef.afterClosed().subscribe(result => {
       if (result === 'confirm') {
-        this.snackBar.open('Logged out successfully. We hope to see you again soon! 😊.', 'Close', {
-          duration: 3000,
-          horizontalPosition: 'center',
-          verticalPosition: 'top',
-        });
+        this.sucessHandler.handleSuccess("Logged out successfully. We hope to see you again soon! 😊.")
       }
     });
   }
@@ -182,5 +174,12 @@ export class NavbarComponent implements OnInit {
     );
     this.eventService.updateFirstProjectAccount(account);
     // this.eventService.PublishProjectAccount(account);
+  }
+
+  openTemplateDialog(){
+    this.dialog.open(ProjectAccountTemplatesComponent, {
+      width: '800px',
+      maxHeight: '530px'
+    });
   }
 }

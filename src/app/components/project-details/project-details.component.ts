@@ -6,6 +6,8 @@ import { ProgressService } from '../../services/progress.service';
 import { MatPaginator } from '@angular/material/paginator';
 import { EventService } from 'src/app/services/event.service';
 import { Subscription } from 'rxjs';
+import { NgForm } from '@angular/forms';
+import { ErrorHandlerService } from 'src/app/services/error-handler.service';
 
 @Component({
   selector: 'project-details',
@@ -15,7 +17,7 @@ import { Subscription } from 'rxjs';
 export class ProjectDetailsComponent implements OnInit, OnDestroy {
   projectId: number | null = null;
   public project: any;
-  newProgress = { bill: '', progress:'', clientSatisfaction:'' };
+  newProgress = {progress:''};
   loading: boolean = false;
   progressArr: any[] = [];
   totalProgress: number = 0;
@@ -37,16 +39,12 @@ export class ProjectDetailsComponent implements OnInit, OnDestroy {
   constructor(
     private progressService: ProgressService,
     private projectsService: ProjectsService,
-    private eventService: EventService, 
+    private eventService: EventService,
+    private errorHandler: ErrorHandlerService,
     private snackBar: MatSnackBar
   ) {}
 
   ngOnInit(): void {
-    this.newProgress = {
-      bill: 'Hourly Bill/Milestone Amount:',
-      clientSatisfaction: 'Client Satisfaction:', 
-      progress: 'Progress:'
-    };
     this.eventSubscription = this.eventService.ProjectSelected$.subscribe((projectId : number) => {
       if (projectId) {
         this.projectId = projectId;
@@ -84,19 +82,7 @@ export class ProjectDetailsComponent implements OnInit, OnDestroy {
         },
         (error) => {
           this.loading = false;
-          if (error.status == 400 || error.status == 500 || error.status == 0) {
-            this.snackBar.open('Server is not responding 😢.', 'Close', {
-              duration: 3000,
-              horizontalPosition: 'center',
-              verticalPosition: 'top',
-            });
-          } else {
-            this.snackBar.open(error.error.message + ' 😢.', 'Close', {
-              duration: 3000,
-              horizontalPosition: 'center',
-              verticalPosition: 'top',
-            });
-          }
+          this.errorHandler.handleError(error)
         }
       );
     }
@@ -113,29 +99,29 @@ export class ProjectDetailsComponent implements OnInit, OnDestroy {
         (error) => {
           console.error('Error fetching project:', error);
           this.loadingComp = false;
-          if (error.status == 400 || error.status == 500 || error.status == 0) {
-            this.snackBar.open('Server is not responding 😢.', 'Close', {
-              duration: 3000,
-              horizontalPosition: 'center',
-              verticalPosition: 'top',
-            });
-          } else {
-            this.snackBar.open(error.error.message + ' 😢.', 'Close', {
-              duration: 3000,
-              horizontalPosition: 'center',
-              verticalPosition: 'top',
-            });
-          }
+          this.errorHandler.handleError(error)
         }
       );
     }
   }
 
-  addProgress(): void {
+  convertToLinks(text: string): string {
+    const urlPattern = /((https?:\/\/)?[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}[^\s]*)/g;
+    return text.replace(urlPattern, function (url) {
+      let hyperlink = url;
+      if (!hyperlink.startsWith('http')) {
+        hyperlink = 'https://' + url;
+      }
+      const domainName = (new URL(hyperlink)).hostname.replace('www.', '').split('.')[0];
+      return `<a href="${hyperlink}" target="_blank">${domainName}</a>`;
+    });
+  }
+
+  addProgress(progressForm: NgForm): void {
     this.loading = true;
     const user = JSON.parse(localStorage.getItem('user') || '{}');
     if (user && this.project) {
-      const description = this.newProgress.bill + '<br>' + this.newProgress.progress + '<br>' + this.newProgress.clientSatisfaction
+      const description = this.newProgress.progress
       const progressData = {
         progress: description,
         projectId: this.project.id
@@ -144,26 +130,15 @@ export class ProjectDetailsComponent implements OnInit, OnDestroy {
       this.progressSubscription = this.progressService.addProgress(progressData).subscribe(
         () => {
           this.loading = false;
-          this.newProgress = { bill: '', progress:'', clientSatisfaction: '' };
+          this.newProgress = { progress:''};
           this.isAddProgressPanelExpanded = false; 
           this.isProgressPanelExpanded = true; 
           this.loadProgress();
+          progressForm.resetForm();  
         },
         (error) => {
           this.loading = false;
-          if (error.status == 400 || error.status == 500 || error.status == 0) {
-            this.snackBar.open('Server is not responding 😢.', 'Close', {
-              duration: 3000,
-              horizontalPosition: 'center',
-              verticalPosition: 'top',
-            });
-          } else {
-            this.snackBar.open(error.error.message + ' 😢.', 'Close', {
-              duration: 3000,
-              horizontalPosition: 'center',
-              verticalPosition: 'top',
-            });
-          }
+          this.errorHandler.handleError(error)
         }
       );
     } else {

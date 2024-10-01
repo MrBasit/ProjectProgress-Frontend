@@ -1,4 +1,7 @@
-<h2>{{ isEditMode ? 'Edit Project' : 'Add New Project' }}</h2>
+<div style="display: flex;  justify-content: space-between; align-items: center;">
+  <h2>{{ isEditMode ? 'Edit Project' : 'Add New Project' }}</h2>
+  <mat-icon style="margin: 0 10px ;color: red;" (click)="close()">close</mat-icon>
+</div>
 <form [formGroup]="projectForm">
   <mat-form-field appearance="fill" style="width: 100%;">
     <mat-label>Account</mat-label>
@@ -70,7 +73,7 @@
 
   <mat-form-field appearance="fill" style="width: 100%;">
     <mat-label>Description</mat-label>
-    <textarea matInput formControlName="description" rows="5" placeholder="Link:&#10;Description:" class="custom-description"></textarea>
+    <textarea matInput formControlName="description" rows="3" placeholder="Link:&#10;Description:" class="custom-description"></textarea>
     <mat-error *ngIf="projectForm.get('description')?.invalid && projectForm.get('description')?.touched">
       Description is required
     </mat-error>
@@ -86,6 +89,5 @@
       {{ isEditMode ? 'Update' : 'Submit' }}
     </button>
     <loader [loading]="loading" [ngClass]="{'loader': loading}"></loader>
-    <button mat-button (click)="close()">Cancel</button>
   </div>
 </form>

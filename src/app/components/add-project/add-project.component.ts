@@ -6,6 +6,8 @@ import { ProjectsService } from '../../services/projects.service';
 import { Subscription } from 'rxjs';
 import { DatePipe } from '@angular/common';
 import { EventService } from 'src/app/services/event.service';
+import { ErrorHandlerService } from 'src/app/services/error-handler.service';
+import { SuccessHandlerService } from 'src/app/services/success-handler.service';
 
 @Component({
   selector: 'add-project',
@@ -14,9 +16,10 @@ import { EventService } from 'src/app/services/event.service';
 })
 export class AddProjectComponent implements OnInit, OnDestroy {
   projectTypeOptions: string[] = [
-    'Web',
+    'Website',
     'SMM',
-    'Logo Design',
+    'Graphic Designing',
+    'Video Editing',
     'Other'
   ];
   
@@ -43,6 +46,8 @@ export class AddProjectComponent implements OnInit, OnDestroy {
     private datePipe: DatePipe,
     private eventService: EventService,
     private snackBar: MatSnackBar,
+    private errorHandler: ErrorHandlerService,
+    private sucessHandler: SuccessHandlerService,
     @Inject(MAT_DIALOG_DATA) public data: any 
   ) {
     this.projectForm = this.fb.group({
@@ -116,19 +121,7 @@ export class AddProjectComponent implements OnInit, OnDestroy {
         this.statusOptions = response; 
       },
       (error) => {
-        if (error.status == 400 || error.status == 500 || error.status == 0) {
-          this.snackBar.open('Server is not responding 😢.', 'Close', {
-            duration: 3000,
-            horizontalPosition: 'center',
-            verticalPosition: 'top',
-          });
-        } else {
-          this.snackBar.open(error.error.message + ' 😢.', 'Close', {
-            duration: 3000,
-            horizontalPosition: 'center',
-            verticalPosition: 'top',
-          });
-        }
+        this.errorHandler.handleError(error)
       }
     );
   }
@@ -158,22 +151,11 @@ export class AddProjectComponent implements OnInit, OnDestroy {
           () => {
             this.loading = false;
             this.dialogRef.close("confirm");
+            this.sucessHandler.handleSuccess('Project updated successfully 🥳!!');
           },
           (error) => {
             this.loading = false;
-            if (error.status == 400 || error.status == 500 || error.status == 0) {
-              this.snackBar.open('Server is not responding 😢.', 'Close', {
-                duration: 3000,
-                horizontalPosition: 'center',
-                verticalPosition: 'top',
-              });
-            } else {
-              this.snackBar.open(error.error.message + ' 😢.', 'Close', {
-                duration: 3000,
-                horizontalPosition: 'center',
-                verticalPosition: 'top',
-              });
-            }
+            this.errorHandler.handleError(error)
           }
         );
   
@@ -191,22 +173,10 @@ export class AddProjectComponent implements OnInit, OnDestroy {
           () => {
             this.loading = false;
             this.dialogRef.close("confirm");
+            this.sucessHandler.handleSuccess('Project added successfully 🥳!!');
           },
           (error) => {
-            this.loading = false;
-            if (error.status == 400 || error.status == 500 || error.status == 0) {
-              this.snackBar.open('Server is not responding 😢.', 'Close', {
-                duration: 3000,
-                horizontalPosition: 'center',
-                verticalPosition: 'top',
-              });
-            } else {
-              this.snackBar.open(error.error.message + ' 😢.', 'Close', {
-                duration: 3000,
-                horizontalPosition: 'center',
-                verticalPosition: 'top',
-              });
-            }
+            this.errorHandler.handleError(error)
           }
         );
       }

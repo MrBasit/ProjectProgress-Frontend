@@ -75,29 +75,28 @@ export class AuthGuardService {
       password: credentials.password
     };
 
-    return this.http.post(`${this.url}/api/Authentication/UserLogin`, body)
-    // .pipe(
-    //   concatMap((response: any) => {
-    //     const userData = {
-    //       token: response.token,
-    //       userId: response.userId,
-    //       validity: response.validity
-    //     };
+    return this.http.post(`${this.url}/api/Authentication/UserLogin`, body).pipe(
+      concatMap((response: any) => {
+        const userData = {
+          token: response.token,
+          userId: response.userId,
+          validity: response.validity
+        };
 
-    //     localStorage.setItem('user', JSON.stringify(userData));
-    //     return this.getUserAccounts(userData.userId);
-    //   }),
-    //   tap((response: any) => {
-    //     const accounts = response;
-    //     accounts.forEach((account: any) => {
-    //       const key = `projectAccount_${account.projectAccount.id}`;
-    //       localStorage.setItem(key, JSON.stringify({
-    //         id: account.projectAccount.id,
-    //         name: account.projectAccount.name
-    //       }));
-    //     });
-    //   })
-    // );
+        localStorage.setItem('user', JSON.stringify(userData));
+        return this.getUserAccounts(userData.userId);
+      }),
+      tap((response: any) => {
+        const accounts = response;
+        accounts.forEach((account: any) => {
+          const key = `projectAccount_${account.projectAccount.id}`;
+          localStorage.setItem(key, JSON.stringify({
+            id: account.projectAccount.id,
+            name: account.projectAccount.name
+          }));
+        });
+      })
+    );
   }
 
   register(credentials: any){

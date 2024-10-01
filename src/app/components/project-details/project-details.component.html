@@ -7,7 +7,8 @@
     <h3>{{ project.title }}</h3>
     <div>
       <p><strong>{{ project.status.name }}</strong> | {{ project.projectIniateDate | date }}</p>
-      <p class="project-description">{{ project.description }}</p>
+      <p class="project-description" [innerHTML]="convertToLinks(project.description)"></p>
+
 
       <mat-accordion>
         <mat-expansion-panel [(expanded)]="isAddProgressPanelExpanded">
@@ -20,32 +21,15 @@
             </mat-panel-description>
           </mat-expansion-panel-header>
 
-          <form (ngSubmit)="addProgress()" #progressForm="ngForm">
-            <mat-form-field appearance="fill">
-              <mat-label>Hourly Bill/Milestone Amount</mat-label>
-              <input matInput [(ngModel)]="newProgress.bill" name="bill" placeholder="Hourly Bill/Milestone Amount:" required />
-              <mat-error *ngIf="progressForm.controls['bill']?.invalid && progressForm.controls['bill']?.touched">
-                Hourly Bill/Milestone Amount is required
-              </mat-error>
-            </mat-form-field>
-
-            <mat-form-field appearance="fill">
-              <mat-label>Client Satisfaction</mat-label>
-              <input matInput [(ngModel)]="newProgress.clientSatisfaction" name="clientSatisfaction" placeholder="Client Satisfaction:" required />
-              <mat-error *ngIf="progressForm.controls['clientSatisfaction']?.invalid && progressForm.controls['clientSatisfaction']?.touched">
-                Client Satisfaction is required
-              </mat-error>
-            </mat-form-field>
-
+          <form (ngSubmit)="addProgress(progressForm)" #progressForm="ngForm">
             <mat-form-field appearance="fill">
               <mat-label>Progress</mat-label>
-              <textarea matInput [(ngModel)]="newProgress.progress" name="progress" placeholder="Progress:" required></textarea>
+              <textarea matInput [(ngModel)]="newProgress.progress" name="progress" rows="4" placeholder="Progress:" required></textarea>
               <mat-error *ngIf="progressForm.controls['progress']?.invalid && progressForm.controls['progress']?.touched">
                 Progress is required
               </mat-error>
             </mat-form-field>
-
-
+          
             <div class="actions">
               <button *ngIf="!loading" mat-raised-button color="primary" type="submit" [disabled]="progressForm.invalid">Add Progress</button>
               <loader [loading]="loading"></loader>

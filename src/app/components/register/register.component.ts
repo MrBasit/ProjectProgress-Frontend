@@ -3,6 +3,8 @@ import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { AuthGuardService } from 'src/app/services/auth-guard.service';
+import { ErrorHandlerService } from 'src/app/services/error-handler.service';
+import { SuccessHandlerService } from 'src/app/services/success-handler.service';
 
 
 @Component({
@@ -20,7 +22,14 @@ export class RegisterComponent {
   passwordHasSpecialChar: boolean = false;
   passwordMinLength: boolean = false;
 
-  constructor(private fb: FormBuilder, private router: Router, private authGuardService: AuthGuardService, private snackBar: MatSnackBar) {
+  constructor(
+    private fb: FormBuilder, 
+    private router: Router, 
+    private authGuardService: AuthGuardService, 
+    private errorHandler: ErrorHandlerService,
+    private successHandler: SuccessHandlerService,
+    private snackBar: MatSnackBar
+  ) {
     this.registerForm = this.fb.group({
       username: ['', Validators.required],
       email: ['', [Validators.required, Validators.email]],
@@ -43,28 +52,12 @@ export class RegisterComponent {
       this.authGuardService.register(credentials).subscribe(
         () => {
           this.loading = false;
-          this.snackBar.open('Hurry!! you are registered 🥳.', 'Close', {
-            duration: 3000,
-            horizontalPosition: 'center',
-            verticalPosition: 'top',
-          });
+          this.successHandler.handleSuccess("Hurry!! you are registered 🥳.")
           this.router.navigate(['/login']);
         },
         (error) => {
           this.loading = false;
-          if (error.status == 0 || error.status == 500 || error.status == 400) {
-            this.snackBar.open('Server is not responding 😢.', 'Close', {
-              duration: 3000,
-              horizontalPosition: 'center',
-              verticalPosition: 'top',
-            });
-          } else {
-            this.snackBar.open(error.error.message + ' 😢.', 'Close', {
-              duration: 3000,
-              horizontalPosition: 'center',
-              verticalPosition: 'top',
-            });
-          }
+          this.errorHandler.handleError(error)
         }
       );
     }
