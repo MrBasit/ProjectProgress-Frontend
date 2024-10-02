@@ -26,6 +26,9 @@ import { HashLocationStrategy, LocationStrategy } from '@angular/common';
 import { LoginGuard } from './login.guard';
 import { ProjectAccountTemplatesComponent } from './components/project-account-templates/project-account-templates.component';
 import { AuthInterceptor } from './auth.interceptor';
+import { DeleteTemplateComponent } from './components/delete-template/delete-template.component';
+import { JwtHelperService, JWT_OPTIONS } from '@auth0/angular-jwt';
+import { RecoverProjectComponent } from './components/recover-project/recover-project.component';
 
 @NgModule({
   declarations: [
@@ -41,7 +44,9 @@ import { AuthInterceptor } from './auth.interceptor';
     RegisterComponent,
     OtpComponent,
     SignOutComponent,
-    ProjectAccountTemplatesComponent
+    ProjectAccountTemplatesComponent,
+    DeleteTemplateComponent,
+    RecoverProjectComponent
   ],
   imports: [
     BrowserModule,
@@ -65,7 +70,9 @@ import { AuthInterceptor } from './auth.interceptor';
       provide: HTTP_INTERCEPTORS,
       useClass: AuthInterceptor,
       multi: true
-    }
+    },
+    JwtHelperService,
+    { provide: JWT_OPTIONS, useValue: JWT_OPTIONS }
   ],
   bootstrap: [AppComponent]
 })

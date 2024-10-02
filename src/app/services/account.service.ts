@@ -14,7 +14,9 @@ export class AccountService {
 
   constructor(private http: HttpClient) {}
 
-  fetchProjectAccounts(userId: string): Observable<any> {
+  fetchProjectAccounts(): Observable<any> {
+    const user = JSON.parse(localStorage.getItem('user') || '{}');
+    let userId = user.userId
     const url = `${this.url}/api/Authentication/GetUserAccounts?UserId=${userId}`;
     return this.http.post(url, {}).pipe(
         tap((accounts: any[]) => {
@@ -25,21 +27,16 @@ export class AccountService {
             this.projectAccountsSubject.next(projectAccounts);
         })
     );
-}
-
-
-  getProjectAccounts(): { id: number, name: string }[] {
-    return this.projectAccountsSubject.value;
   }
 
   clearAccounts() {
     this.projectAccountsSubject.next([]);
   }
-  setProjectAccounts(accounts: any[]) {
-    const projectAccounts = accounts.map(account => ({
-      id: account.projectAccount.id,
-      name: account.projectAccount.name
-    }));
-    this.projectAccountsSubject.next(projectAccounts);
-  }
+  // setProjectAccounts(accounts: any[]) {
+  //   const projectAccounts = accounts.map(account => ({
+  //     id: account.projectAccount.id,
+  //     name: account.projectAccount.name
+  //   }));
+  //   this.projectAccountsSubject.next(projectAccounts);
+  // }
 }

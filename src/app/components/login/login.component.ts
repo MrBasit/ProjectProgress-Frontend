@@ -38,13 +38,8 @@ export class LoginComponent {
       this.authGuardService.login(credentials).subscribe(
         (response : any) => {
           this.loading = false
-          this.sucessHandler.handleSuccess(response.message)
-          // this.snackBar.open(response.message , 'Close', {
-          //   duration: 3000,
-          //   horizontalPosition: 'center',
-          //   verticalPosition: 'top',
-          // });          
-          this.router.navigate(['/home']);
+          this.sucessHandler.handleSuccess(response.message)        
+          this.router.navigate(['/otp']);
         },
         (error) => {
           this.loading = false

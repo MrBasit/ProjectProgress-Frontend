@@ -9,6 +9,7 @@ import { SignOutComponent } from '../sign-out/sign-out.component';
 import { ProjectAccountTemplatesComponent } from './../project-account-templates/project-account-templates.component';
 import { ErrorHandlerService } from 'src/app/services/error-handler.service';
 import { SuccessHandlerService } from 'src/app/services/success-handler.service';
+import { AccountService } from 'src/app/services/account.service';
 
 @Component({
   selector: 'navbar',
@@ -30,37 +31,45 @@ export class NavbarComponent implements OnInit {
     private dialog: MatDialog,
     private eventService: EventService,
     private projectService: ProjectsService,
+    private accountService: AccountService,
     private errorHandler: ErrorHandlerService,
     private sucessHandler: SuccessHandlerService,
     private snackBar: MatSnackBar
   ) {}
 
   ngOnInit(): void {
-    this.loadProjectAccounts();
+    // this.loadProjectAccounts();
     this.loadStatuses();
     this.selectedSortOption = '2';
-  }
-
-  loadProjectAccounts() {
-    const projectAccounts: { id: number, name: string }[] = [];
-    for (let i = 0; i < localStorage.length; i++) {
-      const key = localStorage.key(i);
-      if (key && key.startsWith('projectAccount_')) {
-        const accountData = localStorage.getItem(key);
-        if (accountData) {
-          const account = JSON.parse(accountData);
-          projectAccounts.push(account);
-        }
+    this.accountService.projectAccounts$.subscribe((account : any) => {
+      this.projectAccounts = account
+      if (this.projectAccounts.length > 0) {
+        this.firstProjectAccount = this.projectAccounts[0];
+        this.remainingProjectAccounts = this.projectAccounts.slice(1);
+        this.eventService.updateFirstProjectAccount(this.firstProjectAccount);
       }
-    }
-
-    this.projectAccounts = projectAccounts;
-    if (this.projectAccounts.length > 0) {
-      this.firstProjectAccount = this.projectAccounts[0];
-      this.remainingProjectAccounts = this.projectAccounts.slice(1);
-      this.eventService.updateFirstProjectAccount(this.firstProjectAccount);
-    }
+    })
   }
+
+  // loadProjectAccounts() {
+  //   const projectAccounts: { id: number, name: string }[] = [];
+  //   for (let i = 0; i < localStorage.length; i++) {
+  //     const key = localStorage.key(i);
+  //     if (key && key.startsWith('projectAccount_')) {
+  //       const accountData = localStorage.getItem(key);
+  //       if (accountData) {
+  //         const account = JSON.parse(accountData);
+  //         projectAccounts.push(account);
+  //       }
+  //     }
+  //   }
+  //   this.projectAccounts = projectAccounts;
+  //   if (this.projectAccounts.length > 0) {
+  //     this.firstProjectAccount = this.projectAccounts[0];
+  //     this.remainingProjectAccounts = this.projectAccounts.slice(1);
+  //     this.eventService.updateFirstProjectAccount(this.firstProjectAccount);
+  //   }
+  // }
 
   onReset() {
     this.searchTerm = ''; 

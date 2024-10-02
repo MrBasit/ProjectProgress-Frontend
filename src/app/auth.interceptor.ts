@@ -7,21 +7,23 @@ import {
 } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
 import { Router } from '@angular/router';
+import { AccountService } from './services/account.service';
+import { JwtHelperService } from '@auth0/angular-jwt';
 
 @Injectable()
 export class AuthInterceptor implements HttpInterceptor {
 
-  constructor(private router: Router) {}
+  constructor(private router: Router, private accountService: AccountService, private jwtHelper: JwtHelperService) {}
 
   intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
     const user = JSON.parse(localStorage.getItem('user') || '{}');
     
-    if (user.token && user.validity) {
-      const currentTime = new Date().getTime();
-      const validityTime = new Date(user.validity).getTime();
-
-      if (validityTime <= currentTime) {
-        localStorage.clear(); 
+    if (user.token) {
+      const isTokenExpired = this.jwtHelper.isTokenExpired(user.token);
+      
+      if (isTokenExpired) {
+        localStorage.clear();
+        this.accountService.clearAccounts();
         this.router.navigate(['/login']);
         return throwError({
           error: {
@@ -32,6 +34,6 @@ export class AuthInterceptor implements HttpInterceptor {
       }
     }
 
-    return next.handle(req)
+    return next.handle(req);
   }
 }

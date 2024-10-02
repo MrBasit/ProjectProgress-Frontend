@@ -32,7 +32,12 @@ export class DeleteProjectComponent implements OnInit, OnDestroy {
       this.deleteSubscription = this.projectsService.deleteProject(this.project.id).subscribe(
         (response) => {
           this.dialogRef.close('confirm');
-          this.loading = false; 
+          this.loading = false;
+          this.snackBar.open(`Project has been deleted.`, 'Close', {
+            duration: 3000,
+            horizontalPosition: 'center',
+            verticalPosition: 'top',
+          }); 
         },
         (error) => {
           this.loading = false;

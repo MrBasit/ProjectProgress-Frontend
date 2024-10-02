@@ -1,9 +1,10 @@
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
-import { MatDialogRef } from '@angular/material/dialog';
+import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { TemplatesService } from 'src/app/services/templates.service';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { ErrorHandlerService } from 'src/app/services/error-handler.service';
 import { SuccessHandlerService } from 'src/app/services/success-handler.service';
+import { DeleteTemplateComponent } from '../delete-template/delete-template.component';
 
 @Component({
   selector: 'app-project-account-templates',
@@ -12,6 +13,7 @@ import { SuccessHandlerService } from 'src/app/services/success-handler.service'
 })
 export class ProjectAccountTemplatesComponent implements OnInit {
   templates : any[];
+  allTemplates: any[] = [];
   searchTerm: string;
   Add = false;
   templateForm: FormGroup; 
@@ -26,6 +28,7 @@ export class ProjectAccountTemplatesComponent implements OnInit {
     private templateService: TemplatesService,
     private errorHandler: ErrorHandlerService,
     private successHandler: SuccessHandlerService,
+    private dialog: MatDialog, 
     private fb: FormBuilder 
   ) {
 
@@ -38,22 +41,39 @@ export class ProjectAccountTemplatesComponent implements OnInit {
 
   ngOnInit(): void {
     this.getTemplates();
+    this.templateForm.get('alias').disable()
+    this.templateForm.get('heading').valueChanges.subscribe((value: string) => {
+      const aliasValue = value ? value.toLowerCase().replace(/\s+/g, '_') : '';
+      this.templateForm.get('alias').setValue(aliasValue, { emitEvent: false });
+    });
   }
 
   applyFilter(event: Event) {
-    const filterValue = (event.target as HTMLInputElement).value;
-    this.searchTerm = filterValue.trim().toLowerCase();
+    const filterValue = (event.target as HTMLInputElement).value.trim().toLowerCase();
+    this.searchTerm = filterValue;
+  
+    if (this.searchTerm === '') {
+      this.templates = [...this.allTemplates];
+    } else {
+      this.templates = this.allTemplates.filter(template => 
+        template.heading.toLowerCase().includes(this.searchTerm) || 
+        template.alias.toLowerCase().includes(this.searchTerm)
+      );
+    }
+    this.noTemplates = this.templates.length === 0;
   }
+  
 
   getTemplates() {
     this.isLoading = true
     this.templateService.getTemplates().subscribe(
       (templates: any) => {
+        this.isLoading = false
+        this.allTemplates = templates;
+        this.templates = templates; 
         if(templates.length == 0){
           this.noTemplates = true;
         }
-        this.isLoading = false
-        this.templates = templates;
       }, 
       (error) => {
         this.isLoading = false
@@ -95,6 +115,7 @@ export class ProjectAccountTemplatesComponent implements OnInit {
 
   onSubmit() {
     this.loading = true;
+    this.templateForm.get('alias').enable()
     if (this.templateForm.valid) {
       if (this.selectedTemplate) {
         const template = {
@@ -107,6 +128,7 @@ export class ProjectAccountTemplatesComponent implements OnInit {
         this.templateService.updateTemplate(template).subscribe(
           () => {
             this.loading = false
+            this.templateForm.get('alias').disable()
             this.Add = false; 
             this.selectedTemplate = null; 
             this.templateForm.reset();
@@ -114,6 +136,7 @@ export class ProjectAccountTemplatesComponent implements OnInit {
             this.successHandler.handleSuccess("Template has been edited successfully 🥳!!")
           }, 
           (error)=>{
+            this.templateForm.get('alias').disable()  
             this.loading = false
             this.errorHandler.handleError(error)
             this.getTemplates();
@@ -130,6 +153,7 @@ export class ProjectAccountTemplatesComponent implements OnInit {
         this.templateService.addTemplate(template).subscribe(
           () => {
             this.loading = false
+            this.templateForm.get('alias').disable()
             this.Add = false; 
             this.selectedTemplate = null; 
             this.templateForm.reset();
@@ -137,6 +161,7 @@ export class ProjectAccountTemplatesComponent implements OnInit {
             this.successHandler.handleSuccess("Template has been added successfully 🥳!!")
           },
           (error)=>{
+            this.templateForm.get('alias').disable()
             this.loading = false
             this.errorHandler.handleError(error)
             this.getTemplates();
@@ -145,16 +170,16 @@ export class ProjectAccountTemplatesComponent implements OnInit {
       }
     }
   }
-  deleteTemplate(id){
-    this.templateService.deleteTemplate(id).subscribe(
-      () => {
-        this.getTemplates();
-      },
-      (error)=>{
-        this.errorHandler.handleError(error)
+  deleteTemplate(template){
+    const dialogRef = this.dialog.open(DeleteTemplateComponent, {
+      data: template,
+      width:  'fit-content',
+    });
+    dialogRef.afterClosed().subscribe(result => {
+      if (result === 'confirm') {
         this.getTemplates();
       }
-    )
+    });
   }
 
   close(): void {

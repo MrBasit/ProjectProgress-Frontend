@@ -24,7 +24,7 @@
           <form (ngSubmit)="addProgress(progressForm)" #progressForm="ngForm">
             <mat-form-field appearance="fill">
               <mat-label>Progress</mat-label>
-              <textarea matInput [(ngModel)]="newProgress.progress" name="progress" rows="4" placeholder="Progress:" required></textarea>
+              <textarea matInput [(ngModel)]="newProgress.progress" name="progress" rows="6" placeholder="Progress:" required></textarea>
               <mat-error *ngIf="progressForm.controls['progress']?.invalid && progressForm.controls['progress']?.touched">
                 Progress is required
               </mat-error>

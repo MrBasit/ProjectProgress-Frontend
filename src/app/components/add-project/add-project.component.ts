@@ -32,6 +32,7 @@ export class AddProjectComponent implements OnInit, OnDestroy {
   account: any;
   currentDate: string = '';
   loading: boolean = false;
+  statusLoading = false;
   isEditMode: boolean = false;
   statusOptions: { id: number, name: string }[] = [];
   statusFieldDisabled: boolean = true; 
@@ -116,11 +117,14 @@ export class AddProjectComponent implements OnInit, OnDestroy {
   
 
   loadStatusOptions() {
+    this.statusLoading = true;
     this.statusSubscription = this.projectsService.getStatuses().subscribe(
       (response) => {
+        this.statusLoading = false;
         this.statusOptions = response; 
       },
       (error) => {
+        this.statusLoading = false;
         this.errorHandler.handleError(error)
       }
     );

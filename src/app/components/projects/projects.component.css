@@ -77,6 +77,9 @@ mat-icon:hover{
 .delete:hover{
   color: #E4003A;
 }
+.green:hover{
+  color: #72D82D;
+}
 mat-card-content{
   padding: 0 17px;
 }

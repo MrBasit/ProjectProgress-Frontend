@@ -1,6 +1,7 @@
 h1{
   font-family: "Poppins", sans-serif;
   font-weight: bold;
+  margin: 0px 5px!important;
 }
 button{
   font-family: "Poppins", sans-serif;
@@ -21,7 +22,7 @@ button{
 }
 mat-card-title{
   font-weight: bold;
-  font-size: 1rem!important;
+  font-size: 0.85rem!important;
 }
 .mat-card-header .mat-card-title{
   margin-bottom: 0px!important;

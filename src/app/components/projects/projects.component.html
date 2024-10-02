@@ -44,13 +44,13 @@
                     | {{ project.projectIniateDate | date }}
                   </mat-card-subtitle>
                 </mat-card-header>
-                <mat-icon (click)="openEditProject($event, project)">edit</mat-icon>
-                <mat-icon class="delete" (click)="deleteProject($event, project)">delete</mat-icon>
+                <mat-icon *ngIf="!(project.status.name === 'Deleted')" (click)="openEditProject($event, project)">edit</mat-icon>
+                <mat-icon *ngIf="(project.status.name === 'Deleted')" class="green" style="font-weight: bold;" (click)="openRecycleProject($event, project)">refresh</mat-icon>
+                <mat-icon *ngIf="!(project.status.name === 'Deleted')" class="delete" (click)="deleteProject($event, project)">delete</mat-icon>
               </div>
-    
-              <mat-card-content>
+              <!-- <mat-card-content>
                 <p class="project-description">{{ project.description }}</p>
-              </mat-card-content>
+              </mat-card-content> -->
             </mat-card>
           </div>
         </div>    
@@ -58,7 +58,7 @@
     <mat-paginator
         [length]="totalProjects"
         [pageSize]="pageSize"
-        [pageSizeOptions]="[5, 10, 20, 100]"
+        [pageSizeOptions]="[10, 20, 100]"
         (page)="onPaginateChange($event)"
       >
       </mat-paginator>

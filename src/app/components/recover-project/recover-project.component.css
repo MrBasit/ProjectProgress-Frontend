@@ -1,20 +1,8 @@
-h2{
-  margin: 0;
-}
-.actions{
-  display: flex;
-}
 .loader{
   padding-left: 30px;
   padding-right: 30px;
 }
-.custom-description {
-  white-space: pre-wrap;
-}
-mat-icon{
-  cursor: pointer;
-}
-.form-container {
+.recover-container {
   position: relative;
 }
 

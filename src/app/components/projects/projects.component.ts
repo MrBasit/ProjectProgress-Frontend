@@ -8,6 +8,7 @@ import { Subscription } from 'rxjs';
 import { DeleteProjectComponent } from '../delete-project/delete-project.component';
 import { AddProjectComponent } from '../add-project/add-project.component';
 import { ErrorHandlerService } from 'src/app/services/error-handler.service';
+import { RecoverProjectComponent } from '../recover-project/recover-project.component';
 
 @Component({
   selector: 'projects',
@@ -28,7 +29,7 @@ export class ProjectsComponent implements OnInit, OnDestroy {
   statusesArray: Array<{ id: number, name: string }> = this.statuses;
 
   totalProjects: number = 0;
-  pageSize: number = 5;
+  pageSize: number = 10;
   pageIndex: number = 0;
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
@@ -165,7 +166,23 @@ export class ProjectsComponent implements OnInit, OnDestroy {
     dialogRef.afterClosed().subscribe(result => {
       if (result === 'confirm') {
         this.loadProjects();
-        if (this.selectedProject === project) {
+        if (this.selectedProject.id === project.id) {
+          this.eventService.PublishProjectSelected(project.id);
+        }
+      }
+    });
+  }
+  openRecycleProject(event: Event, project: any) {
+    event.stopPropagation();
+    const dialogRef = this.dialog.open(RecoverProjectComponent, {
+      autoFocus: false,
+      data: { project }
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result === 'confirm') {
+        this.loadProjects();
+        if (this.selectedProject.id === project.id) {
           this.eventService.PublishProjectSelected(project.id);
         }
       }

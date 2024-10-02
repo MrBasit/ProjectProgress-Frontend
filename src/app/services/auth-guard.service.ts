@@ -3,6 +3,7 @@ import { Injectable } from '@angular/core';
 import { environment } from 'src/environments/environment';
 import { concatMap, tap } from 'rxjs/operators';
 import { Router } from '@angular/router';
+import { AccountService } from './account.service';
 
 @Injectable({
   providedIn: 'root'
@@ -10,7 +11,7 @@ import { Router } from '@angular/router';
 export class AuthGuardService {
   private url = environment.url;
 
-  constructor(private http: HttpClient, private router: Router) { }
+  constructor(private http: HttpClient, private router: Router, private accountService: AccountService) { }
 
   isOtpConfirmed(): boolean {
     const user = JSON.parse(localStorage.getItem('user') || '{}');
@@ -46,25 +47,13 @@ export class AuthGuardService {
     .set('OTP', credentials.otp);
 
     return this.http.post(`${this.url}/api/Authentication/UserLogin2FA`, {}, {params}).pipe(
-      concatMap((response: any) => {
+      tap((response: any) => {
         const userData = {
           token: response.token,
           userId: response.userId,
           validity: response.validity
         };
-
         localStorage.setItem('user', JSON.stringify(userData));
-        return this.getUserAccounts(userData.userId);
-      }),
-      tap((response: any) => {
-        const accounts = response;
-        accounts.forEach((account: any) => {
-          const key = `projectAccount_${account.projectAccount.id}`;
-          localStorage.setItem(key, JSON.stringify({
-            id: account.projectAccount.id,
-            name: account.projectAccount.name
-          }));
-        });
       })
     );
   }
@@ -74,30 +63,10 @@ export class AuthGuardService {
       username: credentials.username,
       password: credentials.password
     };
-
-    return this.http.post(`${this.url}/api/Authentication/UserLogin`, body).pipe(
-      concatMap((response: any) => {
-        const userData = {
-          token: response.token,
-          userId: response.userId,
-          validity: response.validity
-        };
-
-        localStorage.setItem('user', JSON.stringify(userData));
-        return this.getUserAccounts(userData.userId);
-      }),
-      tap((response: any) => {
-        const accounts = response;
-        accounts.forEach((account: any) => {
-          const key = `projectAccount_${account.projectAccount.id}`;
-          localStorage.setItem(key, JSON.stringify({
-            id: account.projectAccount.id,
-            name: account.projectAccount.name
-          }));
-        });
-      })
-    );
+  
+    return this.http.post(`${this.url}/api/Authentication/UserLogin`, body)
   }
+  
 
   register(credentials: any){
     const params = new HttpParams().set('Role', 'Admin');
@@ -117,12 +86,8 @@ export class AuthGuardService {
   logout(): void {
     localStorage.removeItem('user');
     localStorage.removeItem('userEmail');
-    const keys = Object.keys(localStorage);
-    keys.forEach(key => {
-      if (key.startsWith('projectAccount_')) {
-        localStorage.removeItem(key);
-      }
-    });
+    localStorage.removeItem('selectedProject');
+    this.accountService.clearAccounts()
     this.router.navigate(['/login']); 
   }
 }

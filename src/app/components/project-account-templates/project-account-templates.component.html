@@ -1,14 +1,15 @@
-<div style="display: flex; justify-content: space-between;">
+<div style="display: flex; justify-content: space-between;align-items: center;">
   <h1 mat-dialog-title>Templates</h1>
+  <mat-form-field style="width: 60%;">
+    <mat-label>Search</mat-label>
+    <input matInput (keyup)="applyFilter($event)" placeholder="Search Templates" #input>
+    <button mat-raised-button color="primary" matSuffix (click)="OnAdd($event)">Add</button>
+  </mat-form-field>
   <mat-icon style="margin: 0 10px ;color: red;" (click)="close()">close</mat-icon>
 </div>
 
 <div style="display: flex; align-items: center; justify-content: space-between;">
-  <mat-form-field style="width: 100%;">
-    <mat-label>Search</mat-label>
-    <input matInput (keyup)="applyFilter($event)" placeholder="Search Templates" #input>
-    <button mat-raised-button color="primary" matSuffix (click)="OnAdd($event)">Add Template</button>
-  </mat-form-field>
+  
 </div>
 
 <mat-dialog-content  class="card-container" style="height: 300px;">
@@ -17,18 +18,21 @@
       <mat-spinner diameter="50"></mat-spinner>
     </div>
   </div>
-  <div *ngIf="noTemplates" style="display: flex;align-items: center; justify-content: center; height: inherit;">
-    <p><strong>Note: </strong>No Templates are there.</p>
+  <div *ngIf="noTemplates && templates.length == 0 && !Add" style="display: flex;align-items: center; justify-content: center; height: inherit;">
+    <p><strong>Note: </strong>No Templates Found.</p>
   </div>
   <mat-card *ngIf="Add" class="card" >
-    <mat-card-header>
+    <!-- <mat-card-header>
       <mat-card-title #dialogContent>{{ selectedTemplate ? 'Edit Template' : 'Add Template' }}</mat-card-title>
-    </mat-card-header>
-    <mat-card-content>
+    </mat-card-header> -->
+    <mat-card-content #dialogContent>
       <form [formGroup]="templateForm" (ngSubmit)="onSubmit()">
         <mat-form-field style="width: 45%; margin-right: 10%;">
           <mat-label>Heading</mat-label>
           <input matInput formControlName="heading" placeholder="Heading of Template" required>
+          <mat-error *ngIf="templateForm.get('heading')?.invalid && templateForm.get('heading')?.touched">
+            Heading is required
+          </mat-error>
         </mat-form-field>
         <mat-form-field style="width: 45%;">
           <mat-label>Alias</mat-label>
@@ -36,10 +40,13 @@
         </mat-form-field>
         <mat-form-field style="width: 100%;">
           <mat-label>Template Content</mat-label>
-          <textarea matInput rows="3" formControlName="templateString" required></textarea>
+          <textarea matInput rows="5" formControlName="templateString" required></textarea>
+          <mat-error *ngIf="templateForm.get('templateString')?.invalid && templateForm.get('templateString')?.touched">
+            Template Content is required
+          </mat-error>
         </mat-form-field>
         <div style="display: flex; align-items: center;">
-          <button *ngIf="!loading" mat-raised-button color="primary" type="submit" style="margin-right: 10px;">{{ selectedTemplate ? 'Update' : 'Add' }}</button>
+          <button *ngIf="!loading" mat-raised-button color="primary" type="submit" style="margin-right: 10px;" [disabled]="!templateForm.valid">{{ selectedTemplate ? 'Update' : 'Add' }}</button>
           <loader [loading]="loading" [ngClass]="{'loader': loading}"></loader>
           <button mat-raised-button color="warn"(click)="onCancel()">Close</button>
         </div>
@@ -47,14 +54,14 @@
     </mat-card-content>
   </mat-card>
   <div class="templates-container" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px;">
-    <mat-card class="card" *ngFor="let t of templates" style="width: 96%;">
+    <mat-card class="card" *ngFor="let t of templates" style="width: 96%; max-width: 350px;">
       <div class="icon">
         <mat-card-header>
           <mat-card-title>{{ t.heading }}</mat-card-title>
         </mat-card-header>
         <div style="display: flex;">
-          <mat-icon (click)="editTemplate(t)">edit</mat-icon>
-          <mat-icon (click)="deleteTemplate(t.id)" class="delete">delete</mat-icon>
+          <mat-icon style="font-size: 1.4rem; height: 20px; width: 20px;" (click)="editTemplate(t)">edit</mat-icon>
+          <mat-icon style="font-size: 1.4rem; height: 20px; width: 20px;"  (click)="deleteTemplate(t)" class="delete">delete</mat-icon>
         </div>
       </div>
       <mat-card-subtitle style="margin: 0px 16px;">

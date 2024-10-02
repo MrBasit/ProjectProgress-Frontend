@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { AccountService } from 'src/app/services/account.service';
 
 @Component({
   selector: 'home',
@@ -8,18 +9,35 @@ import { Component, OnInit } from '@angular/core';
 export class HomeComponent implements OnInit {
   noProjects: boolean = false;
 
+  constructor(private accountService: AccountService){
+
+  }
+
   ngOnInit(): void {
     this.checkForProjects();
   }
 
   checkForProjects(): void {
-    const keys = Object.keys(localStorage);
-    const projectAccountKeys = keys.filter(key => key.startsWith('projectAccount_'));
+    this.accountService.fetchProjectAccounts().subscribe(
+      (response) => {
+        if(response.length > 0){
+          this.noProjects = false
+        }
+        else{
+         this.noProjects = true;
+        }
+      },
+      (error) => {
+        console.error('Error fetching project accounts:', error);
+      }
+    )
+    // const keys = Object.keys(localStorage);
+    // const projectAccountKeys = keys.filter(key => key.startsWith('projectAccount_'));
 
-    if (projectAccountKeys.length > 0) {
-      this.noProjects = false; 
-    } else {
-      this.noProjects = true;
-    }
+    // if (projectAccountKeys.length > 0) {
+    //   this.noProjects = false; 
+    // } else {
+    //   this.noProjects = true;
+    // }
   }
 }

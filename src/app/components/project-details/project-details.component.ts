@@ -105,15 +105,38 @@ export class ProjectDetailsComponent implements OnInit, OnDestroy {
     }
   }
 
-  convertToLinks(text: string): string {
-    const urlPattern = /((https?:\/\/)?[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}[^\s]*)/g;
+  convertToLinks(link: string): string {
+    let text = link.toLowerCase()
+    const urlPattern = /\b((https?:\/\/|htt:\/\/|ht:\/\/|h:\/\/|http:\/\/|https:\/)?(www\.|ww\.|w\.)?[a-zA-Z0-9-]+\.[a-zA-Z]{2,6}([\/?].*)?)\b/g;
     return text.replace(urlPattern, function (url) {
       let hyperlink = url;
-      if (!hyperlink.startsWith('http')) {
-        hyperlink = 'https://' + url;
+
+      if (
+        hyperlink.startsWith('htt://') || 
+        hyperlink.startsWith('ht://')|| 
+        hyperlink.includes('https://ww.') ||
+        hyperlink.includes('https://w.') ||
+        hyperlink.startsWith('ww.')
+      ) {
+        return url; 
       }
-      const domainName = (new URL(hyperlink)).hostname.replace('www.', '').split('.')[0];
-      return `<a href="${hyperlink}" target="_blank">${domainName}</a>`;
+
+
+      if (!hyperlink.startsWith('http')) {
+        hyperlink = 'https://' + hyperlink;
+      }
+
+      try {
+
+        const parsedUrl = new URL(hyperlink);
+
+        const domain = parsedUrl.hostname.replace('www.', '');
+        const domainName = domain.split('.')[0]; 
+
+        return `<a href="${hyperlink}" target="_blank">${domainName}</a>`;
+      } catch (e) {
+        return url; 
+      }
     });
   }
 

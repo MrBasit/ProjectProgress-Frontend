@@ -11,7 +11,7 @@ export class ErrorHandlerService {
   handleError(error: any): void {
     let message = '';
 
-    if (error.status === 500 || error.status === 0) {
+    if (error.status === 0) {
       message = 'Server is not responding 😢.';
     } else {
       message = error.error?.message + ' 😢.';

@@ -1,0 +1,17 @@
+<div class="recover-container">
+  <div *ngIf="statusLoading" class="loading-overlay">
+    <div class="loading-spinner-container">
+      <mat-spinner diameter="50"></mat-spinner>
+    </div>
+  </div>
+  <p>Are you sure you want to recycle <strong>{{data.project?.title}}</strong>?</p>
+
+  <div>
+    <div style="display: flex;">
+      <button *ngIf="!loading" mat-raised-button color="primary" (click)="recycleProject()" style="margin-right: 10px;">Recycle</button>
+      <loader [loading]="loading" [ngClass]="{'loader': loading}"></loader>
+      <button mat-raised-button (click)="close()">Close</button>
+    </div>
+  </div>
+</div>
+
