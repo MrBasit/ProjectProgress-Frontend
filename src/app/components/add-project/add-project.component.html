@@ -8,7 +8,7 @@
       <mat-spinner diameter="50"></mat-spinner>
     </div>
   </div>
-  <form [formGroup]="projectForm">
+  <form [formGroup]="projectForm" style="max-height: 70vh; overflow-y: auto;">
     <mat-form-field appearance="fill" style="width: 100%;">
       <mat-label>Account</mat-label>
       <input matInput formControlName="account" disabled>
@@ -79,7 +79,7 @@
   
     <mat-form-field appearance="fill" style="width: 100%;">
       <mat-label>Description</mat-label>
-      <textarea matInput formControlName="description" rows="3" placeholder="Link:&#10;Description:" class="custom-description"></textarea>
+      <textarea matInput formControlName="description" rows="5" placeholder="Link:&#10;Description:" class="custom-description"></textarea>
       <mat-error *ngIf="projectForm.get('description')?.invalid && projectForm.get('description')?.touched">
         Description is required
       </mat-error>
@@ -89,12 +89,11 @@
       <mat-label>Date</mat-label>
       <input matInput formControlName="date" disabled>
     </mat-form-field>
-  
-    <div class="actions">
-      <button *ngIf="!loading" mat-raised-button color="primary" (click)="addProject()" [disabled]="projectForm.invalid" style="margin-right: 10px;">
-        {{ isEditMode ? 'Update' : 'Submit' }}
-      </button>
-      <loader [loading]="loading" [ngClass]="{'loader': loading}"></loader>
-    </div>
   </form>
+  <div class="actions">
+    <button *ngIf="!loading" mat-raised-button color="primary" (click)="addProject()" [disabled]="projectForm.invalid" style="margin-right: 10px;">
+      {{ isEditMode ? 'Update' : 'Submit' }}
+    </button>
+    <loader [loading]="loading" [ngClass]="{'loader': loading}"></loader>
+  </div>
 </div>
