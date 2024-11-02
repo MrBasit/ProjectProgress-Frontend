@@ -29,6 +29,10 @@ import { AuthInterceptor } from './auth.interceptor';
 import { DeleteTemplateComponent } from './components/delete-template/delete-template.component';
 import { JwtHelperService, JWT_OPTIONS } from '@auth0/angular-jwt';
 import { RecoverProjectComponent } from './components/recover-project/recover-project.component';
+import { AnimatedLoaderComponent } from './components/animated-loader/animated-loader.component';
+import { SelectCheckAllComponent } from './components/select-check-all/select-check-all.component';
+import { ForgetPasswordComponent } from './forget-password/forget-password.component';
+import { ResetPasswordComponent } from './reset-password/reset-password.component';
 
 @NgModule({
   declarations: [
@@ -46,7 +50,11 @@ import { RecoverProjectComponent } from './components/recover-project/recover-pr
     SignOutComponent,
     ProjectAccountTemplatesComponent,
     DeleteTemplateComponent,
-    RecoverProjectComponent
+    RecoverProjectComponent,
+    AnimatedLoaderComponent,
+    SelectCheckAllComponent,
+    ForgetPasswordComponent,
+    ResetPasswordComponent
   ],
   imports: [
     BrowserModule,
@@ -57,6 +65,8 @@ import { RecoverProjectComponent } from './components/recover-project/recover-pr
     HttpClientModule,
     RouterModule.forRoot([
       { path: '', redirectTo: '/home', pathMatch: 'full' },
+      { path: 'forget-password', component: ForgetPasswordComponent,canActivate: [LoginGuard] },
+      { path: 'reset-password', component: ResetPasswordComponent, canActivate: [LoginGuard] },
       { path: 'register', component: RegisterComponent, canActivate: [LoginGuard]  },
       { path: 'login', component: LoginComponent, canActivate: [LoginGuard]  },
       { path: 'otp', component: OtpComponent, canActivate: [OtpGuard] },

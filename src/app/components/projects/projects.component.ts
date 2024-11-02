@@ -48,10 +48,14 @@ export class ProjectsComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     const firstProjectAccount$ = this.eventService.firstProjectAccount$;
     const firstProjectAccountIdSubscription = firstProjectAccount$.subscribe(value => {
+      this.pageIndex= 0;
+      if (this.paginator) this.paginator.firstPage();
       if(value != null){
         this.account = value.id;
         this.loadProjects(); 
       }
+      this.eventService.PublishProjectSelected(null);
+      this.selectedProject = null
     });
     this.subscriptions.push(firstProjectAccountIdSubscription);
 
@@ -65,6 +69,8 @@ export class ProjectsComponent implements OnInit, OnDestroy {
     this.subscriptions.push(
       this.eventService.SearchTermChanged$.subscribe(
         (r: string) => {
+          // this.pageIndex= 0;
+          if (this.paginator) this.paginator.firstPage();
           this.searchTerm = r || ""; 
           this.loadProjects();
         }
@@ -74,6 +80,7 @@ export class ProjectsComponent implements OnInit, OnDestroy {
     this.subscriptions.push(
       this.eventService.statusChange$.subscribe(
         (arr: any) => {
+          this.pageIndex= 0;
           this.statusesArray = arr;
           this.loadProjects();
         }
@@ -93,6 +100,7 @@ export class ProjectsComponent implements OnInit, OnDestroy {
       this.eventService.OnRefresh$.subscribe(
         (refresh) => {
           if (refresh) {
+            this.selectedProject = null
             this.eventService.PublishProjectSelected(null);
             this.loadProjects();
           }
@@ -129,6 +137,12 @@ export class ProjectsComponent implements OnInit, OnDestroy {
           this.totalProjects = response.totalRecords;
           this.noProjects = this.projects.length === 0;
           this.loadingProjects = false;
+          if(this.selectedProject != null){
+            let sp = this.projects.find(p => p.id == this.selectedProject.id)
+            if(sp != null){
+              this.selectedProject = sp
+            }
+          }
         },
         (error) => {
           this.loadingProjects = false;

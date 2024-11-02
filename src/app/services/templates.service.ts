@@ -9,8 +9,8 @@ export class TemplatesService {
   url= environment.url;
   constructor(private http: HttpClient) { }
 
-  getTemplates(){
-    return this.http.get(`${this.url}/api/ProjectAccountTemplate/GetTemplates`);
+  getTemplates(id){
+    return this.http.post(`${this.url}/api/ProjectAccountTemplate/GetTemplates`, id);
   }
 
   addTemplate(template){
@@ -19,11 +19,8 @@ export class TemplatesService {
   updateTemplate(template){
     return this.http.post(`${this.url}/api/ProjectAccountTemplate/UpdateTemplate`, template);
   }
-  deleteTemplate(id){
-    const params ={
-      TemplateId: id
-    }
-    return this.http.delete(`${this.url}/api/ProjectAccountTemplate/DeleteTemplate`,{params});
+  deleteTemplate(id: number) {
+    return this.http.post(`${this.url}/api/ProjectAccountTemplate/DeleteTemplate/${id}`, {});
   }
 
 }

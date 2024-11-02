@@ -1,44 +1,43 @@
-<div class="login">
-  <mat-card>
-    <mat-card-header>
-      <mat-card-title>Login</mat-card-title>
-    </mat-card-header>
-    
-    <mat-card-content>
+<div class="login-background">
+  <div class="login-container">
+    <mat-card class="login-card">
+      <h2 class="welcome-back">Welcome back</h2>
+      <p class="enter-details">Please enter your details</p>
       <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
-        <mat-form-field appearance="fill">
-          <mat-label>Username Or Email</mat-label>
+        <mat-form-field appearance="outline" class="input-field">
+          <mat-label>Username Or Email Address</mat-label>
           <input matInput placeholder="Enter your username or email" formControlName="username" />
           <mat-error *ngIf="loginForm.get('username')?.invalid && loginForm.get('username')?.touched">
-            Username is required
+            Username or Email is required
           </mat-error>
         </mat-form-field>
 
-        <mat-form-field appearance="fill">
+        <mat-form-field appearance="outline" class="input-field">
           <mat-label>Password</mat-label>
           <input matInput type="password" placeholder="Enter your password" formControlName="password" />
           <mat-error *ngIf="loginForm.get('password')?.invalid && loginForm.get('password')?.touched">
             Password is required
           </mat-error>
         </mat-form-field>
-        <mat-error *ngIf="errorMessage">{{ errorMessage }}</mat-error>
+        
+        <div class="extra-options">
+          <mat-checkbox class="remember-me" formControlName = "rememberMe">Remember for a week</mat-checkbox>
+          <a class="forgot-password" routerLink="/forget-password">Forgot password</a>
+        </div>
 
-        <mat-card-actions>
-          <button *ngIf="!loading" mat-raised-button color="primary" type="submit" [disabled]="!loginForm.valid" (click)="onSubmit()">Login</button>
+        <button mat-raised-button color="primary" class="sign-up-button" type="submit" [disabled]="!loginForm.valid">
+          <div *ngIf="!loading">
+            Sign in
+          </div>
           <loader [loading]="loading" [ngClass]="{'loader': loading}"></loader>
-          Or
-          <button mat-button color="primary" (click)="register()">Register</button>
-        </mat-card-actions>
+        </button>
       </form>
-      <!-- <mat-error *ngIf="errorMessage">{{ errorMessage }}</mat-error> -->
-    </mat-card-content>
-    
-    <!-- <mat-card-actions>
-      <button *ngIf="!loading" mat-raised-button color="primary" type="submit" [disabled]="!loginForm.valid" (click)="onSubmit()">Login</button>
-      <loader [loading]="loading" [ngClass]="{'loader': loading}"></loader>
-      Or
-      <button mat-button color="primary" (click)="register()">Register</button>
-    </mat-card-actions> -->
-  </mat-card>
+    </mat-card>
+
+    <p class="sign-up">
+      Don't have an account? <a routerLink="/register">Sign up</a>
+    </p>
+  </div>
 </div>
+
 

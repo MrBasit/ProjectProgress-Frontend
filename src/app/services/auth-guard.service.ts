@@ -44,7 +44,8 @@ export class AuthGuardService {
   otpConfirmation(credentials: any){
     const params = new HttpParams()
     .set('Username', credentials.email)
-    .set('OTP', credentials.otp);
+    .set('OTP', credentials.otp)
+    .set("rememberMe",credentials.rememberMe)
 
     return this.http.post(`${this.url}/api/Authentication/UserLogin2FA`, {}, {params}).pipe(
       tap((response: any) => {
@@ -57,14 +58,33 @@ export class AuthGuardService {
       })
     );
   }
-
+  resendOtp(username) {
+    return this.http.post(`${this.url}/api/Authentication/ResendOTP`, {username}, {
+        headers: { 'Content-Type': 'application/json' }
+    });
+  }
+  forgetPassword(email){
+    return this.http.post(`${this.url}/api/Authentication/ForgetPassword`, { email: email })
+  }
+  resetPassword(resetData){
+    return this.http.post(`${this.url}/api/Authentication/ResetPassword`, resetData)
+  }
   login(credentials: any) {
     const body = {
       username: credentials.username,
       password: credentials.password
     };
   
-    return this.http.post(`${this.url}/api/Authentication/UserLogin`, body)
+    return this.http.post(`${this.url}/api/Authentication/UserLogin`, body).pipe(
+      tap((response: any) => {
+        const userData = {
+          token: response.token,
+          userId: response.userId,
+          validity: response.validity
+        };
+        localStorage.setItem('user', JSON.stringify(userData));
+      })
+    );
   }
   
 
@@ -86,6 +106,7 @@ export class AuthGuardService {
   logout(): void {
     localStorage.removeItem('user');
     localStorage.removeItem('userEmail');
+    localStorage.removeItem('rememberMe');
     localStorage.removeItem('selectedProject');
     this.accountService.clearAccounts()
     this.router.navigate(['/login']); 

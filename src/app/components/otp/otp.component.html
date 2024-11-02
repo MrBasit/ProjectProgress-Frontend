@@ -1,38 +1,50 @@
-<div class="otp">
-  <mat-card>
-    <mat-card-header>
-      <mat-card-title>OTP Confirmation</mat-card-title>
-    </mat-card-header>
-    
-    <mat-card-content>
+<div class="otp-background">
+  <div class="otp-container">
+    <mat-card class="otp-card">
+      <h2 class="otp-title">OTP Confirmation</h2>
+      <p class="otp-subtitle">Please enter your OTP</p>
       <form [formGroup]="otpForm" (ngSubmit)="onSubmit()">
-        <mat-form-field appearance="fill">
+        <mat-form-field appearance="outline" class="input-field">
           <mat-label>Email or Username</mat-label>
           <div style="display: flex; align-items: center;">
             <input matInput formControlName="email" [attr.disabled]="true" style="flex: 1;" />
             <mat-icon (click)="navigateToLogin()">login</mat-icon>
-
           </div>
           <mat-error *ngIf="otpForm.get('email')?.invalid && otpForm.get('email')?.touched">
             Email is required
           </mat-error>
         </mat-form-field>
 
-        <mat-form-field appearance="fill">
-          <mat-label>OTP</mat-label>
-          <input matInput type="otp" placeholder="Enter your OTP" formControlName="otp" />
-          <mat-error *ngIf="otpForm.get('otp')?.invalid && otpForm.get('otp')?.touched">
-            OTP is required
-          </mat-error>
-        </mat-form-field>
-        <mat-error *ngIf="errorMessage">{{ errorMessage }}</mat-error>
-        <mat-card-actions>
-          <button *ngIf="!loading" mat-raised-button color="primary" type="submit" [disabled]="!otpForm.valid" (click)="onSubmit()">Confirm OTP</button>
-          <loader [loading]="loading" [ngClass]="{'loader': loading}"></loader>
-        </mat-card-actions>
+        <div class="otp-inputs">
+          <mat-form-field appearance="outline" *ngFor="let control of otpControls; let i = index">
+            <!-- <mat-label>{{i + 1}}</mat-label> -->
+            <input
+              matInput
+              type="text"
+              maxlength="1"
+              formControlName="otp{{i}}"
+              (input)="onOtpInput(i)"
+              (keydown)="onKeyDown($event, i)"
+              (paste)="onPaste($event, i)"
+              #otpInput
+            />
+          </mat-form-field>
+        </div>                
+        <button mat-raised-button color="primary" class="confirm-button" type="submit" [disabled]="!otpForm.valid">
+          <div *ngIf="!loading">Confirm OTP</div>
+          <loader *ngIf="loading" [loading]="loading" class="loader"></loader>
+        </button>
       </form>
-    </mat-card-content>
-    
-    
-  </mat-card>
+    </mat-card>
+
+    <p class="login-prompt">
+      Didn't recieve OTP? <a (click)="onResend()">Resend</a>
+    </p>
+  </div>
+</div>
+
+<div *ngIf="resendLoading" class="overlay">
+  <div class="loading-spinner-container">
+    <mat-spinner diameter="50"></mat-spinner>
+  </div>
 </div>

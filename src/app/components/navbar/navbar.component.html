@@ -10,7 +10,7 @@
       </mat-form-field>
 
       <div class="status-dropdown">
-        <mat-form-field class="multi-select">
+        <!-- <mat-form-field class="multi-select">
           <mat-label>Status</mat-label>
           <mat-select (closed)="onDropdownClosed()" multiple [(value)]="selectedStatuses" (selectionChange)="onSelectionChange($event)" [disabled]="!firstProjectAccount">
             <mat-select-trigger>
@@ -21,7 +21,16 @@
               {{ status.name }}
             </mat-option>
           </mat-select>
-        </mat-form-field>
+        </mat-form-field> -->
+        <form [formGroup]="form" class="filter">
+          <mat-form-field>
+            <mat-select placeholder="Status" formControlName="status" multiple (closed)="onDropdownClosed()">
+              <app-select-check-all [model]="form.get('status')" [values]="statusOptions">
+              </app-select-check-all>
+              <mat-option *ngFor="let status of statusOptions" [value]="status">{{ status.name }}</mat-option>
+            </mat-select>
+          </mat-form-field>
+        </form>
       </div>
 
       <div class="dropdown">

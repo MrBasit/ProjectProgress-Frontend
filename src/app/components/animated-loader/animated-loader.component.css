@@ -1,0 +1,138 @@
+*,
+*:before,
+*:after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+.wrapper {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    margin: -100px; /* Adjusted margin based on $w-size */
+    width: 200px; /* Adjusted width based on $w-size */
+    height: 200px; /* Adjusted height based on $w-size */
+    background-color: transparent;
+    border: none;
+    -webkit-user-select: none;
+}
+
+.box-wrap {
+    width: 140px; /* Adjusted based on $b-size */
+    height: 140px; /* Adjusted based on $b-size */
+    margin: calc((100% - 140px) / 2) calc((100% - 140px) / 2); /* Adjusted based on $box-wrapper-size */
+    position: relative;
+    transform: rotate(-45deg);
+}
+
+.box {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    left: 0;
+    top: 0;
+    padding: 20px;
+    background: linear-gradient(
+        to right,
+        #010943,
+        #04124f,
+        #072b5b,
+        #0a447a,
+        #0d5f99,
+        #4189b2,
+        #7da3c3,
+        #b0bdb4,
+        #e3c6a2, 
+        #f1b088,
+        #f27e63  
+    );
+    background-position: 0% 50%;
+    background-size: 1000% 1000%;
+    visibility: hidden;
+}
+
+
+/* Animation for different boxes */
+.box.one {
+    animation: moveGradient 15s infinite, oneMove 3.5s infinite;
+}
+
+.box.two {
+    animation: moveGradient 15s infinite, twoMove 3.5s 0.15s infinite;
+}
+
+.box.three {
+    animation: moveGradient 15s infinite, threeMove 3.5s 0.3s infinite;
+}
+
+.box.four {
+    animation: moveGradient 15s infinite, fourMove 3.5s 0.575s infinite;
+}
+
+.box.five {
+    animation: moveGradient 15s infinite, fiveMove 3.5s 0.725s infinite;
+}
+
+.box.six {
+    animation: moveGradient 15s infinite, sixMove 3.5s 0.875s infinite;
+}
+
+@keyframes moveGradient {
+    to {
+        background-position: 100% 50%;
+    }
+}
+
+/* Keyframe animations for each box */
+@keyframes oneMove {
+    0%, 14.2857% { visibility: visible; clip-path: inset(0% 35% 70% round 5%); }
+    28.5714% { clip-path: inset(35% round 5%); }
+    42.8571%, 57.1428% { clip-path: inset(35% 70% 35% 0 round 5%); }
+    71.4285% { clip-path: inset(0% 70% 70% 0 round 5%); }
+    85.7142% { clip-path: inset(0% 70% 70% 0 round 5%); }
+    100% { clip-path: inset(0% 35% 70% round 5%); }
+}
+
+@keyframes twoMove {
+    0%, 14.2857% { visibility: visible; clip-path: inset(0% 70% 70% 0 round 5%); }
+    28.5714%, 42.8571% { clip-path: inset(0% 35% 70% round 5%); }
+    57.1428% { clip-path: inset(35% round 5%); }
+    71.4285% { clip-path: inset(35% 70% 35% 0 round 5%); }
+    85.7142% { clip-path: inset(35% 70% 35% 0 round 5%); }
+    100% { clip-path: inset(0% 70% 70% 0 round 5%); }
+}
+
+@keyframes threeMove {
+    0%, 14.2857% { visibility: visible; clip-path: inset(35% 70% 35% 0 round 5%); }
+    28.5714%, 42.8571% { clip-path: inset(0% 70% 70% 0 round 5%); }
+    57.1428%, 71.4285% { clip-path: inset(0% 35% 70% round 5%); }
+    85.7142% { clip-path: inset(35% round 5%); }
+    100% { clip-path: inset(35% 70% 35% 0 round 5%); }
+}
+
+@keyframes fourMove {
+    0%, 14.2857% { visibility: visible; clip-path: inset(35% 0% 35% 70% round 5%); }
+    28.5714% { clip-path: inset(35% round 5%); }
+    42.8571%, 57.1428% { clip-path: inset(70% 35% 0% 35% round 5%); }
+    71.4285%, 85.7142% { clip-path: inset(70% 0 0 70% round 5%); }
+    100% { clip-path: inset(35% 0% 35% 70% round 5%); }
+}
+
+@keyframes fiveMove {
+    0%, 14.2857% { visibility: visible; clip-path: inset(70% 0 0 70% round 5%); }
+    28.5714%, 42.8571% { clip-path: inset(35% 0% 35% 70% round 5%); }
+    57.1428% { clip-path: inset(35% round 5%); }
+    71.4285% { clip-path: inset(70% 35% 0% 35% round 5%); }
+    85.7142% { clip-path: inset(70% 35% 0% 35% round 5%); }
+    100% { clip-path: inset(70% 0 0 70% round 5%); }
+}
+
+@keyframes sixMove {
+    0%, 14.2857% { visibility: visible; clip-path: inset(70% 35% 0% 35% round 5%); }
+    28.5714%, 42.8571% { clip-path: inset(70% 0 0 70% round 5%); }
+    57.1428% { clip-path: inset(35% 0% 35% 70% round 5%); }
+    71.4285% { clip-path: inset(35% 0% 35% 70% round 5%); }
+    85.7142% { clip-path: inset(35% round 5%); }
+    100% { clip-path: inset(70% 35% 0% 35% round 5%); }
+}

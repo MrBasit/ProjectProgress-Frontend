@@ -1,57 +1,102 @@
-mat-card {
-  max-width: 400px;
-  margin: 2rem auto;
-  padding: 1rem;
-  border: 1px solid #BDBDBD; 
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); 
-  border-radius: 8px;
+.otp-background {
+  background: #f7f8fc;
   display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-}
-
-mat-card-title,
-mat-card-subtitle {
-  text-align: center;
-}
-
-mat-form-field {
-  width: 100%;
-  margin-bottom: 16px;
-}
-
-.otp {
-  display: flex;
-  flex-direction: column;
   justify-content: center;
   align-items: center;
   height: 100vh;
+  font-family: "Poppins", sans-serif;
+  color: #333;
 }
 
-mat-card-title {
-  font-weight: bold;
+.otp-container {
+  width: 100%;
+  max-width: 400px;
+  text-align: center;
+}
+
+mat-card {
   font-family: "Poppins", sans-serif;
 }
 
-mat-card-actions{
-  align-self: flex-start;
-  margin-bottom: 10px;
-  display: flex;
-  align-items: center;
-  justify-content: flex-start;
-}
-.mat-card-actions{
-  padding-bottom: 0px;
-}
-button{
-  margin: 10px !important;
+.otp-title {
+  font-size: 1.8rem;
   font-weight: bold;
+  margin: 0;
 }
-.loader{
-  padding-left: 30px;
-  padding-right: 30px;
+
+.otp-subtitle {
+  font-size: 0.9rem;
+  color: #6b7280;
+  margin: 0 0 20px 0;
 }
-mat-icon{
+
+.otp-card {
+  padding: 1rem 2rem 2rem 2rem;
+  border-radius: 12px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  background-color: #ffffff;
+}
+
+.input-field {
+  width: 95%;
+}
+mat-icon, a{
   cursor: pointer;
 }
+.otp-inputs {
+  display: flex;
+  justify-content: space-between;
+  margin: 1rem 0;
+}
+
+mat-form-field {
+  flex: 1;
+  margin: 0 0.5rem;
+  width: 40px; 
+}
+
+.confirm-button {
+  width: 100%;
+  height: 45px;
+  margin: 1.5rem 0 0 0;
+  font-weight: bold;
+  background-color: var(--primary-color);
+  color: #fff;
+  text-transform: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.login-prompt {
+  font-size: 0.9rem;
+  color: #6b7280;
+}
+
+.login-prompt a {
+  color: var(--secondary-color);
+  text-decoration: none;
+}
+
+.loader ::ng-deep .mat-progress-spinner circle,
+.mat-spinner circle {
+  stroke: white;
+}
+
+.overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(255, 255, 255, 0.7); 
+  z-index: 120;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.loading-spinner-container {
+  text-align: center;
+  opacity: 1;
+}
+

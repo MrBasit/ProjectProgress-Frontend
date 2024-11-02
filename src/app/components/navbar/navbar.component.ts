@@ -10,6 +10,7 @@ import { ProjectAccountTemplatesComponent } from './../project-account-templates
 import { ErrorHandlerService } from 'src/app/services/error-handler.service';
 import { SuccessHandlerService } from 'src/app/services/success-handler.service';
 import { AccountService } from 'src/app/services/account.service';
+import { FormControl, FormGroup } from '@angular/forms';
 
 @Component({
   selector: 'navbar',
@@ -26,6 +27,8 @@ export class NavbarComponent implements OnInit {
   projectAccounts: { id: number, name: string }[] = [];
   firstProjectAccount: { id: number, name: string } | null = null;
   remainingProjectAccounts: { id: number, name: string }[] = [];
+  form: FormGroup;
+  isInitialLoad = true;
 
   constructor(
     private dialog: MatDialog,
@@ -39,6 +42,9 @@ export class NavbarComponent implements OnInit {
 
   ngOnInit(): void {
     // this.loadProjectAccounts();
+    this.form = new FormGroup({
+      status: new FormControl(this.statusOptions)      
+    });
     this.loadStatuses();
     this.selectedSortOption = '2';
     this.accountService.projectAccounts$.subscribe((account : any) => {
@@ -79,55 +85,86 @@ export class NavbarComponent implements OnInit {
     this.eventService.PublishSortChanged(2); 
 
     const activeStatus = this.statusOptions.find(status => status.name === 'Active');
-    this.selectedStatuses = [activeStatus.name];
-    this.allSelected = false
+    this.statusesArray = [activeStatus];
+    this.form.patchValue({ status: [activeStatus] });
     this.onDropdownClosed(); 
   }
   
 
-  loadStatuses() {
+  // loadStatuses() {
+  //   this.projectService.getStatuses().subscribe(
+  //     (response) => {
+  //       this.statusOptions = response;
+  //       const activeStatus = this.statusOptions.find(status => status.name === 'Active');
+  //       this.selectedStatuses = [activeStatus.name];
+  //       // this.allSelected = true; 
+  //     },
+  //     (error) => {
+  //       console.error('Failed to load statuses', error);
+  //       this.errorHandler.handleError(error)
+  //     }
+  //   );
+  // }
+
+  // onSelectionChange(e: Event) {
+  //   if (
+  //     this.selectedStatuses.includes('All') ||
+  //     this.selectedStatuses.length === this.statusOptions.length
+  //   ) {
+  //     if (this.allSelected) {
+  //       this.selectedStatuses = [];
+  //       this.allSelected = false;
+  //     } else {
+  //       this.selectedStatuses = [
+  //         ...this.statusOptions.map(status => status.name),
+  //       ];
+  //       this.allSelected = true;
+  //     }
+  //   } else {
+  //     this.allSelected = false;
+
+  //     if (this.selectedStatuses.length === this.statusOptions.length) {
+  //       this.allSelected = true;
+  //     }
+  //   }
+  // }
+
+  // onDropdownClosed() {
+  //   this.statusesArray = this.statusOptions.filter(option =>
+  //     this.selectedStatuses.includes(option.name)
+  //   );
+  //   this.eventService.publishStatusChange(this.statusesArray);
+  // }
+  loadStatuses(){
     this.projectService.getStatuses().subscribe(
-      (response) => {
+      (response: any) => {
         this.statusOptions = response;
-        const activeStatus = this.statusOptions.find(status => status.name === 'Active');
-        this.selectedStatuses = [activeStatus.name];
-        // this.allSelected = true; 
+        if (this.isInitialLoad) {
+          const activeStatus = this.statusOptions.find(status => status.name === 'Active');
+          if (activeStatus) {
+            this.statusesArray = [activeStatus];
+            this.form.patchValue({ status: [activeStatus] });
+          } else {
+            this.form.patchValue({ status: [] });
+            this.statusesArray = [];
+          }
+          this.isInitialLoad = false;
+        } else {
+          let statuses =  response.filter(status => this.statusesArray.map(s => s.id).includes(status.id));
+          this.form.patchValue({ status: statuses });
+        } 
+        // this.refreshEmployeeList();
       },
       (error) => {
-        console.error('Failed to load statuses', error);
-        this.errorHandler.handleError(error)
+        this.errorHandler.handleError(error);
       }
     );
-  }
-
-  onSelectionChange(e: Event) {
-    if (
-      this.selectedStatuses.includes('All') ||
-      this.selectedStatuses.length === this.statusOptions.length
-    ) {
-      if (this.allSelected) {
-        this.selectedStatuses = [];
-        this.allSelected = false;
-      } else {
-        this.selectedStatuses = [
-          ...this.statusOptions.map(status => status.name),
-        ];
-        this.allSelected = true;
-      }
-    } else {
-      this.allSelected = false;
-
-      if (this.selectedStatuses.length === this.statusOptions.length) {
-        this.allSelected = true;
-      }
-    }
   }
 
   onDropdownClosed() {
-    this.statusesArray = this.statusOptions.filter(option =>
-      this.selectedStatuses.includes(option.name)
-    );
+    this.statusesArray = this.form.get('status')?.value || [];
     this.eventService.publishStatusChange(this.statusesArray);
+    // this.refreshEmployeeList();
   }
 
   getSelectedStatusesDisplay(): string {

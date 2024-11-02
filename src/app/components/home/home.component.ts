@@ -8,6 +8,7 @@ import { AccountService } from 'src/app/services/account.service';
 })
 export class HomeComponent implements OnInit {
   noProjects: boolean = false;
+  loading = true;
 
   constructor(private accountService: AccountService){
 
@@ -20,6 +21,9 @@ export class HomeComponent implements OnInit {
   checkForProjects(): void {
     this.accountService.fetchProjectAccounts().subscribe(
       (response) => {
+        setTimeout(() => {
+          this.loading= false
+        }, 2000);
         if(response.length > 0){
           this.noProjects = false
         }
@@ -28,6 +32,9 @@ export class HomeComponent implements OnInit {
         }
       },
       (error) => {
+        setTimeout(() => {
+          this.loading= false
+        }, 2000);
         console.error('Error fetching project accounts:', error);
       }
     )

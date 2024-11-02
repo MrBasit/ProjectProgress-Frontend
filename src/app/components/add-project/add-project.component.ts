@@ -8,6 +8,7 @@ import { DatePipe } from '@angular/common';
 import { EventService } from 'src/app/services/event.service';
 import { ErrorHandlerService } from 'src/app/services/error-handler.service';
 import { SuccessHandlerService } from 'src/app/services/success-handler.service';
+import { TemplatesService } from 'src/app/services/templates.service';
 
 @Component({
   selector: 'add-project',
@@ -36,9 +37,15 @@ export class AddProjectComponent implements OnInit, OnDestroy {
   isEditMode: boolean = false;
   statusOptions: { id: number, name: string }[] = [];
   statusFieldDisabled: boolean = true; 
+  aliases = []
+  types = ["Fill", "Append"]
+  aliasSelection = {alias:'', type:''}
+  accountId;
+  isLoading = false;
 
   private projectSubscription: Subscription | undefined;
   private statusSubscription: Subscription | undefined;
+  private templateSubscription : Subscription | undefined;
 
   constructor(
     private fb: FormBuilder,
@@ -48,6 +55,7 @@ export class AddProjectComponent implements OnInit, OnDestroy {
     private eventService: EventService,
     private snackBar: MatSnackBar,
     private errorHandler: ErrorHandlerService,
+    private templateService: TemplatesService,
     private sucessHandler: SuccessHandlerService,
     @Inject(MAT_DIALOG_DATA) public data: any 
   ) {
@@ -65,6 +73,13 @@ export class AddProjectComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
+    this.aliasSelection.alias = '';
+    this.aliasSelection.type = '';
+    const firstProjectAccount$ = this.eventService.firstProjectAccount$;
+    this.templateSubscription = firstProjectAccount$.subscribe(value => {
+      this.accountId = value.id;
+      this.getTemplates();
+    });
     const userSession = JSON.parse(localStorage.getItem('user') || '{}');
     
     if (userSession) {
@@ -115,6 +130,20 @@ export class AddProjectComponent implements OnInit, OnDestroy {
     this.loadStatusOptions();
   }
   
+  getTemplates(){
+    this.aliases = []
+    this.isLoading = true
+    this.templateService.getTemplates(this.accountId).subscribe(
+      (templates: any) => {
+        this.isLoading = false
+        this.aliases = templates;
+      }, 
+      (error) => {
+        this.isLoading = false
+        this.errorHandler.handleError(error)
+      }
+    );
+  }
 
   loadStatusOptions() {
     this.statusLoading = true;
@@ -128,6 +157,19 @@ export class AddProjectComponent implements OnInit, OnDestroy {
         this.errorHandler.handleError(error)
       }
     );
+  }
+
+  onTemplateSelect(): void {
+    if (this.aliasSelection.type && this.aliasSelection.alias) { 
+      if (this.aliasSelection.type === 'Fill') {
+        this.projectForm.patchValue({description: this.aliasSelection.alias});
+      } else if (this.aliasSelection.type === 'Append') {
+        const currentDescription = this.projectForm.get('description').value;
+        this.projectForm.patchValue({ description: currentDescription + this.aliasSelection.alias });
+      }
+      this.aliasSelection.alias = '';
+      this.aliasSelection.type = '';
+    }
   }
 
   addProject() {
@@ -206,6 +248,9 @@ export class AddProjectComponent implements OnInit, OnDestroy {
     }
     if (this.statusSubscription) {
       this.statusSubscription.unsubscribe();
+    }
+    if(this.templateSubscription){
+      this.templateSubscription.unsubscribe();
     }
   }
 }

@@ -8,6 +8,8 @@ import { EventService } from 'src/app/services/event.service';
 import { Subscription } from 'rxjs';
 import { NgForm } from '@angular/forms';
 import { ErrorHandlerService } from 'src/app/services/error-handler.service';
+import { types } from 'util';
+import { TemplatesService } from 'src/app/services/templates.service';
 
 @Component({
   selector: 'project-details',
@@ -24,6 +26,12 @@ export class ProjectDetailsComponent implements OnInit, OnDestroy {
   pageSize: number = 5;
   pageIndex: number = 0;
   loadingComp: boolean = false;
+  aliases = []
+  types = ["Fill", "Append"]
+  aliasSelection = {alias:'', type:''}
+  accountId;
+  isLoading = false
+  loadingPro = false
 
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
@@ -41,11 +49,19 @@ export class ProjectDetailsComponent implements OnInit, OnDestroy {
     private projectsService: ProjectsService,
     private eventService: EventService,
     private errorHandler: ErrorHandlerService,
-    private snackBar: MatSnackBar
+    private templateService: TemplatesService,
   ) {}
 
   ngOnInit(): void {
+    const firstProjectAccount$ = this.eventService.firstProjectAccount$;
+    firstProjectAccount$.subscribe(value => {
+      this.accountId = value.id;
+      this.getTemplates();
+    });
     this.eventSubscription = this.eventService.ProjectSelected$.subscribe((projectId : number) => {
+      this.totalProgress= 0;
+      this.pageSize= 5;
+      this.pageIndex= 0;
       if (projectId) {
         this.projectId = projectId;
         this.loadProject();
@@ -57,6 +73,21 @@ export class ProjectDetailsComponent implements OnInit, OnDestroy {
         this.totalProgress = 0;
       }
     });
+  }
+  getTemplates(){
+    this.aliases = []
+    this.isLoading = true
+    this.templateService.getTemplates(this.accountId).subscribe(
+      (templates: any) => {
+        this.isLoading = false
+        this.aliases = templates;
+      }, 
+      (error) => {
+        this.isLoading = false
+        this.errorHandler.handleError(error)
+        // this.noTemplates = true;
+      }
+    );
   }
 
   ngOnDestroy(): void {
@@ -71,17 +102,30 @@ export class ProjectDetailsComponent implements OnInit, OnDestroy {
     }
   }
 
+  onTemplateSelect(): void {
+    if (this.aliasSelection.type && this.aliasSelection.alias) { 
+      if (this.aliasSelection.type === 'Fill') {
+        this.newProgress.progress = this.aliasSelection.alias; 
+      } else if (this.aliasSelection.type === 'Append') {
+        this.newProgress.progress += this.aliasSelection.alias;
+      }
+
+      this.aliasSelection.alias = '';
+      this.aliasSelection.type = '';
+    }
+  }
+
   loadProgress(): void {
     if (this.projectId) {
-      this.loading = true;
+      this.loadingPro = true;
       this.progressSubscription = this.progressService.getProgressWithPagination(this.projectId, this.pageIndex + 1, this.pageSize).subscribe(
         (response) => {
           this.progressArr = response.data;
           this.totalProgress = response.totalRecords;
-          this.loading = false;
+          this.loadingPro = false;
         },
         (error) => {
-          this.loading = false;
+          this.loadingPro = false;
           this.errorHandler.handleError(error)
         }
       );
@@ -89,6 +133,9 @@ export class ProjectDetailsComponent implements OnInit, OnDestroy {
   }
 
   loadProject(): void {
+    this.aliasSelection.alias = '';
+    this.aliasSelection.type = '';
+    this.newProgress = { progress: '' };
     if (this.projectId != null) {
       this.loadingComp = true;
       this.projectSubscription = this.projectsService.getProjectById(this.projectId).subscribe(
@@ -103,6 +150,7 @@ export class ProjectDetailsComponent implements OnInit, OnDestroy {
         }
       );
     }
+    this.project = null
   }
 
   convertToLinks(link: string): string {

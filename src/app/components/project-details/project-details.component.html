@@ -22,7 +22,35 @@
           </mat-expansion-panel-header>
 
           <form (ngSubmit)="addProgress(progressForm)" #progressForm="ngForm">
-            <mat-form-field appearance="fill">
+            <form class="alias-form" #aliasForm="ngForm">
+              <mat-form-field appearance="outline" class="alias-form-field">
+                <mat-label>Select Template</mat-label>
+                <mat-select [(ngModel)]="aliasSelection.alias" name="alias">
+                  <mat-option *ngFor="let alias of aliases" [value]="alias?.templateString">
+                    {{ alias?.alias }}
+                  </mat-option>
+                </mat-select>
+              </mat-form-field>
+            
+              <mat-form-field appearance="outline" class="type-form-field">
+                <mat-label>Method</mat-label>
+                <mat-select [(ngModel)]="aliasSelection.type" name="type">
+                  <mat-option *ngFor="let type of types" [value]="type">
+                    {{ type }}
+                  </mat-option>
+                </mat-select>
+              </mat-form-field>
+            
+              <button 
+                mat-mini-fab 
+                color="primary" 
+                type="button" 
+                (click)="onTemplateSelect()" 
+                [disabled]="!aliasSelection.alias || !aliasSelection.type"> 
+                <mat-icon>send</mat-icon>
+              </button>
+            </form>
+            <mat-form-field appearance="outline">
               <mat-label>Progress</mat-label>
               <textarea matInput [(ngModel)]="newProgress.progress" name="progress" rows="6" placeholder="Progress:" required></textarea>
               <mat-error *ngIf="progressForm.controls['progress']?.invalid && progressForm.controls['progress']?.touched">

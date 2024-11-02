@@ -14,7 +14,6 @@ import { SuccessHandlerService } from 'src/app/services/success-handler.service'
 export class LoginComponent {
   loginForm: FormGroup;
   loading: boolean = false;
-  errorMessage: string = '';
 
   constructor(
     private fb: FormBuilder,
@@ -26,7 +25,8 @@ export class LoginComponent {
   ) {
     this.loginForm = this.fb.group({
       username: ['', Validators.required],
-      password: ['', [Validators.required, Validators.minLength(6)]]
+      password: ['', [Validators.required, Validators.minLength(6)]],
+      rememberMe :  [false]
     });
   }
 
@@ -35,21 +35,24 @@ export class LoginComponent {
       this.loading = true;
       const credentials = this.loginForm.value;
       localStorage.setItem('userEmail', credentials.username);
+      localStorage.setItem('rememberMe', credentials.rememberMe);
       this.authGuardService.login(credentials).subscribe(
         (response : any) => {
           this.loading = false
           this.sucessHandler.handleSuccess(response.message)        
-          this.router.navigate(['/otp']);
+          this.router.navigate(['/home']);
         },
         (error) => {
           this.loading = false
           console.log(error)
           localStorage.removeItem('userEmail');
+          localStorage.removeItem('rememberMe');
           if (error.status === 401) {
-            this.errorMessage = 'Username or password is incorrect 😢.';
-            setTimeout(() => {
-              this.errorMessage = '';
-            }, 3000); 
+            this.snackBar.open('Username or password is incorrect 😢.', 'Close', {
+              duration: 3000,
+              horizontalPosition: 'center',
+              verticalPosition: 'top',
+            });
           }
           else {
             this.errorHandler.handleError(error)

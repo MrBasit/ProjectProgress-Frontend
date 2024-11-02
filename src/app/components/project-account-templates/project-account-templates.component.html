@@ -18,7 +18,7 @@
       <mat-spinner diameter="50"></mat-spinner>
     </div>
   </div>
-  <div *ngIf="noTemplates && templates.length == 0 && !Add" style="display: flex;align-items: center; justify-content: center; height: inherit;">
+  <div *ngIf="noTemplates && templates?.length == 0 && !Add" style="display: flex;align-items: center; justify-content: center; height: inherit;">
     <p><strong>Note: </strong>No Templates Found.</p>
   </div>
   <mat-card *ngIf="Add" class="card" >
@@ -57,7 +57,7 @@
     <mat-card class="card" *ngFor="let t of templates" style="width: 96%; max-width: 350px;">
       <div class="icon">
         <mat-card-header>
-          <mat-card-title>{{ t.heading }}</mat-card-title>
+          <mat-card-title>{{ t?.heading }}</mat-card-title>
         </mat-card-header>
         <div style="display: flex;">
           <mat-icon style="font-size: 1.4rem; height: 20px; width: 20px;" (click)="editTemplate(t)">edit</mat-icon>
@@ -65,10 +65,10 @@
         </div>
       </div>
       <mat-card-subtitle style="margin: 0px 16px;">
-        <strong>Alias: </strong>{{ t.alias }}
+        <strong>Alias: </strong>{{ t?.alias }}
       </mat-card-subtitle>
       <mat-card-content>
-        <div [innerHTML]="t.templateString" class="customeText"></div>
+        <div [innerHTML]="t?.templateString" class="customeText"></div>
       </mat-card-content>
     </mat-card>
   </div>

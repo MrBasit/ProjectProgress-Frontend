@@ -1,18 +1,20 @@
-import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { TemplatesService } from 'src/app/services/templates.service';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { ErrorHandlerService } from 'src/app/services/error-handler.service';
 import { SuccessHandlerService } from 'src/app/services/success-handler.service';
 import { DeleteTemplateComponent } from '../delete-template/delete-template.component';
+import { EventService } from 'src/app/services/event.service';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-project-account-templates',
   templateUrl: './project-account-templates.component.html',
   styleUrls: ['./project-account-templates.component.css']
 })
-export class ProjectAccountTemplatesComponent implements OnInit {
-  templates : any[];
+export class ProjectAccountTemplatesComponent implements OnInit, OnDestroy {
+  templates : any[] = [];
   allTemplates: any[] = [];
   searchTerm: string;
   Add = false;
@@ -22,13 +24,17 @@ export class ProjectAccountTemplatesComponent implements OnInit {
   loading= false;
   noTemplates= false;  
   @ViewChild('dialogContent') dialogContent: ElementRef;
+  accountId = 0;
+  private subscriptions: Subscription[] = [];
+
 
   constructor(
     private dialogRef: MatDialogRef<ProjectAccountTemplatesComponent>,
     private templateService: TemplatesService,
     private errorHandler: ErrorHandlerService,
     private successHandler: SuccessHandlerService,
-    private dialog: MatDialog, 
+    private dialog: MatDialog,
+    private eventService: EventService,
     private fb: FormBuilder 
   ) {
 
@@ -40,7 +46,13 @@ export class ProjectAccountTemplatesComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.getTemplates();
+    const firstsubs = this.eventService.firstProjectAccount$.subscribe(value => {
+      if(value != null){
+        this.accountId = value.id;
+        this.getTemplates();
+      }
+    });
+    this.subscriptions.push(firstsubs);
     this.templateForm.get('alias').disable()
     this.templateForm.get('heading').valueChanges.subscribe((value: string) => {
       const aliasValue = value ? value.toLowerCase().replace(/\s+/g, '_') : '';
@@ -60,18 +72,20 @@ export class ProjectAccountTemplatesComponent implements OnInit {
         template.alias.toLowerCase().includes(this.searchTerm)
       );
     }
-    this.noTemplates = this.templates.length === 0;
+    this.noTemplates = this.templates?.length === 0;
   }
   
 
   getTemplates() {
+    this.allTemplates = []
+    this.templates = []
     this.isLoading = true
-    this.templateService.getTemplates().subscribe(
+    this.templateService.getTemplates(this.accountId).subscribe(
       (templates: any) => {
         this.isLoading = false
         this.allTemplates = templates;
         this.templates = templates; 
-        if(templates.length == 0){
+        if(templates?.length == 0){
           this.noTemplates = true;
         }
       }, 
@@ -123,7 +137,7 @@ export class ProjectAccountTemplatesComponent implements OnInit {
           heading: this.templateForm.value.heading,
           alias: this.templateForm.value.alias,
           templateString: this.templateForm.value.templateString,
-          projectAccoutId: 0
+          projectAccoutId: this.accountId
         }
         this.templateService.updateTemplate(template).subscribe(
           () => {
@@ -148,7 +162,7 @@ export class ProjectAccountTemplatesComponent implements OnInit {
           heading: this.templateForm.value.heading,
           alias: this.templateForm.value.alias,
           templateString: this.templateForm.value.templateString,
-          projectAccoutId: 1
+          projectAccoutId: this.accountId
         }
         this.templateService.addTemplate(template).subscribe(
           () => {
@@ -184,5 +198,11 @@ export class ProjectAccountTemplatesComponent implements OnInit {
 
   close(): void {
     this.dialogRef.close();
+  }
+  ngOnDestroy(): void {
+    if(this.subscriptions){
+      this.subscriptions.forEach(sub => sub.unsubscribe());
+      this.subscriptions = null;
+    }
   }
 }
