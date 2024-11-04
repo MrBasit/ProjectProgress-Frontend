@@ -34,10 +34,13 @@ export class ForgetPasswordComponent {
           this.successHandler.handleSuccess(response.message)
           this.loading = false;
           this.forgetPasswordForm.reset();
+          this.forgetPasswordForm.get('email')?.setErrors(null);
+          this.forgetPasswordForm.get('email')?.markAsUntouched();
+          this.forgetPasswordForm.get('email')?.markAsPristine();
         },
         (error) => {
           this.loading = false;
-          this.errorHandler.handleError(error.message)
+          this.errorHandler.handleError(error)
         },
       );
     }

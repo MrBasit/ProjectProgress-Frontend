@@ -41,6 +41,8 @@ mat-icon{
   align-items: center;
   border: 1px solid lightgray;
   border-radius: 5px;
+  margin-bottom: 20px;
+  padding: 5px;
 }
 .alias-form-field{
   width: 58%;
